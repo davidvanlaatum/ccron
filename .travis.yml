@@ -19,7 +19,6 @@ services:
   - rabbitmq
 sudo: required
 env:
-  - DB=sqlite
   - DB=mysql
   - DB=postgres
 
