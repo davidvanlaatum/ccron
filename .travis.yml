@@ -8,10 +8,22 @@ php:
 matrix:
   fast_finish: true
 
-install: composer install
+install:
+  - sh -c "sed -e "s/mysql/$DB/" -i '' app/config/parameters.yml.dist"
+  - composer install
 
 script: vendor/bin/phpunit
 services:
   - mysql
+  - postgresql
   - rabbitmq
 sudo: required
+env:
+  - DB=sqlite
+  - DB=mysql
+  - DB=postgres
+
+before_script:
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS tests;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE tests;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS tests;'; fi"
