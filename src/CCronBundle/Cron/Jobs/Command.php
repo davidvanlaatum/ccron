@@ -27,7 +27,6 @@ class Command extends AbstractJob {
     function execute() {
         $builder = new ProcessBuilder(["exec", "sh", "-xc", $this->command]);
         $process = $builder->getProcess();
-        var_dump($process->getCommandLine());
         $process->run(function ($type, $output) {
             $this->output .= $output;
         });
