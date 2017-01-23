@@ -368,6 +368,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/Controller/DefaultControllerTest.php">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/var/cache/dev/AppKernelTest.php">
           <value>
             <set />
