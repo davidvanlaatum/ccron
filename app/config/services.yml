@@ -6,7 +6,7 @@ parameters:
 
 services:
   cronrunner:
-    class: AppBundle\Cron\Runner
+    class: CCronBundle\Cron\Runner
     lazy: true
     calls:
       - [setContainer, ['@service_container']]
@@ -16,47 +16,47 @@ services:
     calls:
       - [setWorkerPoolSize, ['%workers%']]
   worker:
-    class: AppBundle\Cron\Worker
+    class: CCronBundle\Cron\Worker
     lazy: true
   events:
-    class: AppBundle\Cron\EventProcessor
+    class: CCronBundle\Cron\EventProcessor
     lazy: true
     calls:
       - [setContainer, ['@service_container']]
   job_tracker:
-    class: AppBundle\Cron\JobTracker
+    class: CCronBundle\Cron\JobTracker
     lazy: true
     calls:
       - [setContainer, ['@service_container']]
   master:
-    class: AppBundle\Cron\Master
+    class: CCronBundle\Cron\Master
     lazy: true
     calls:
       - [setContainer, ['@service_container']]
   failover_tracker:
-    class: AppBundle\Cron\FailoverTracker
+    class: CCronBundle\Cron\FailoverTracker
     lazy: true
     calls:
       - [setContainer, ['@service_container']]
       - [setKeepaliveTime, ['%keepalive.time%']]
   hostname_determiner:
-    class: AppBundle\Cron\HostnameDeterminer
+    class: CCronBundle\Cron\HostnameDeterminer
     lazy: true
   rpc_server:
-    class: AppBundle\Cron\RPCServer
+    class: CCronBundle\Cron\RPCServer
     lazy: true
   master_consumer:
     arguments: ['@old_sound_rabbit_mq.connection.default',null,null]
-    class: AppBundle\Cron\MultiConsumer
+    class: CCronBundle\Cron\MultiConsumer
     lazy: true
     calls:
       - [setContainer, ['@service_container']]
       - [setIdleTimeout, ['1']]
       - [setIdleTimeoutExitCode, ['0']]
   running:
-    class: AppBundle\Cron\Running
+    class: CCronBundle\Cron\Running
   event_sender:
-    class: AppBundle\Events\EventSender
+    class: CCronBundle\Events\EventSender
     calls:
       - [setContainer, ['@service_container']]
     lazy: true

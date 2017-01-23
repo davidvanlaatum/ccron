@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% form_theme jobform 'bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block pagetitle %}
+    <h1>Edit Job</h1>
+{% endblock %}
+{% block body %}
+    <div id="wrapper">
+        <div id="container">
+            {{ form(jobform) }}
+        </div>
+    </div>
+{% endblock %}

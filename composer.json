@@ -24,7 +24,9 @@
         "incenteev/composer-parameter-handler": "^2.0",
         "php-amqplib/rabbitmq-bundle": "^1.12",
         "qxsch/worker-pool": "^1.4",
-        "mtdowling/cron-expression": "^1.1"
+        "mtdowling/cron-expression": "^1.1",
+        "fxp/composer-asset-plugin": "^1.2",
+        "bower-asset/bootstrap": "^3.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
@@ -58,8 +60,9 @@
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
         },
-        "branch-alias": {
-            "dev-master": "3.2-dev"
+        "asset-installer-paths": {
+            "npm-asset-library": "web/assets/vendor",
+            "bower-asset-library": "web/assets/vendor"
         }
     }
 }
