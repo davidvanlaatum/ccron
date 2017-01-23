@@ -11,6 +11,7 @@ matrix:
 install:
   - sh -c "sed -e "s/mysql/$DB/" -i'' app/config/parameters.yml.dist"
   - composer install
+  - bin/console doctrine:schema:update --force
 
 script: vendor/bin/phpunit
 services:
