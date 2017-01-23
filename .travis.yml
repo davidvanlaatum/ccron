@@ -1,0 +1,13 @@
+language: php
+
+php:
+  - 5.5
+  - 7.0
+
+matrix:
+  fast_finish: true
+
+before_install:
+  - composer self-update
+
+install: composer update --prefer-dist
