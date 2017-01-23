@@ -48,11 +48,6 @@
             "@symfony-scripts"
         ]
     },
-    "config": {
-        "platform": {
-            "php": "5.6.19"
-        }
-    },
     "extra": {
         "symfony-app-dir": "app",
         "symfony-bin-dir": "bin",
