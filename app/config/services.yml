@@ -1,0 +1,62 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/service_container.html
+parameters:
+  workers: 3
+  keepalive.time: 5
+
+services:
+  cronrunner:
+    class: AppBundle\Cron\Runner
+    lazy: true
+    calls:
+      - [setContainer, ['@service_container']]
+  workerpool:
+    class: QXS\WorkerPool\WorkerPool
+    lazy: true
+    calls:
+      - [setWorkerPoolSize, ['%workers%']]
+  worker:
+    class: AppBundle\Cron\Worker
+    lazy: true
+  events:
+    class: AppBundle\Cron\EventProcessor
+    lazy: true
+    calls:
+      - [setContainer, ['@service_container']]
+  job_tracker:
+    class: AppBundle\Cron\JobTracker
+    lazy: true
+    calls:
+      - [setContainer, ['@service_container']]
+  master:
+    class: AppBundle\Cron\Master
+    lazy: true
+    calls:
+      - [setContainer, ['@service_container']]
+  failover_tracker:
+    class: AppBundle\Cron\FailoverTracker
+    lazy: true
+    calls:
+      - [setContainer, ['@service_container']]
+      - [setKeepaliveTime, ['%keepalive.time%']]
+  hostname_determiner:
+    class: AppBundle\Cron\HostnameDeterminer
+    lazy: true
+  rpc_server:
+    class: AppBundle\Cron\RPCServer
+    lazy: true
+  master_consumer:
+    arguments: ['@old_sound_rabbit_mq.connection.default',null,null]
+    class: AppBundle\Cron\MultiConsumer
+    lazy: true
+    calls:
+      - [setContainer, ['@service_container']]
+      - [setIdleTimeout, ['1']]
+      - [setIdleTimeoutExitCode, ['0']]
+  running:
+    class: AppBundle\Cron\Running
+  event_sender:
+    class: AppBundle\Events\EventSender
+    calls:
+      - [setContainer, ['@service_container']]
+    lazy: true
