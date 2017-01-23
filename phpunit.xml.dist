@@ -7,6 +7,9 @@
          colors="true"
          bootstrap="app/autoload.php"
 >
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+    </logging>
     <php>
         <ini name="error_reporting" value="-1" />
         <server name="KERNEL_DIR" value="app/" />
