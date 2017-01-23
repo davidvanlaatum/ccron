@@ -38,6 +38,7 @@ class MasterCommand extends ContainerAwareCommand {
             } else {
                 $consumer->removeSubQueue($rpcServer);
             }
+            $this->getContainer()->get("doctrine.orm.default_entity_manager")->clear();
         }
     }
 }

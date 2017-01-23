@@ -93,8 +93,6 @@ class DefaultController extends Controller {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $run = $em->find(JobRun::class, $id);
-        $res = new Response('plain/text');
-        $res->setContent($run->getOutput());
-        return $res;
+        return new Response($run->getOutput(),200,["Content-Type" => "text/plain"]);
     }
 }

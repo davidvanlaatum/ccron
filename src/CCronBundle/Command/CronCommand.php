@@ -25,6 +25,7 @@ class CronCommand extends ContainerAwareCommand {
         while ($running->isRunning()) {
             $consumer->consume();
             $this->checkForCompleteJobs();
+            $this->getContainer()->get("doctrine.orm.default_entity_manager")->clear();
         }
         $consumer->stopConsuming();
         $shutdown_start = gettimeofday();

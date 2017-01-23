@@ -323,6 +323,16 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/CCronBundle/Command/CronCommand.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/CCronBundle/Command/MasterCommand.php">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/CCronBundle/Controller/DefaultController.php">
           <value>
             <set />
@@ -334,6 +344,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/JobTracker.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/Jobs/Command.php">
           <value>
             <set />
           </value>
