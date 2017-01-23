@@ -53,6 +53,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/ccron.iml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/composer.json">
           <value>
             <set />
@@ -273,7 +278,22 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/tests/AppBundle/AppKernelTest.php">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/tests/AppBundle/Controller/DefaultControllerTest.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tests/AppBundle/VersionTest.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/var/cache/dev/AppKernelTest.php">
           <value>
             <set />
           </value>
