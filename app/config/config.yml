@@ -105,7 +105,7 @@ old_sound_rabbit_mq:
       callback:         cronrunner
       idle_timeout:     10
       idle_timeout_exit_code: 0
-      qos_options:      {prefetch_size: 0, prefetch_count: %workers%, global: false}
+      qos_options:      {prefetch_size: 0, prefetch_count: '%workers%', global: false}
     events:
       connection:       default
       exchange_options: {name: 'events', type: topic}
