@@ -9,7 +9,7 @@ matrix:
   fast_finish: true
 
 install:
-  - sh -c "sed -e "s/mysql/$DB/" -i '' app/config/parameters.yml.dist"
+  - sh -c "sed -e "s/mysql/$DB/" -i'' app/config/parameters.yml.dist"
   - composer install
 
 script: vendor/bin/phpunit
