@@ -10,7 +10,7 @@ matrix:
 
 install:
   - id -un
-  - sh -c "sed -e "s/mysql/$DB/;/database_user/s/root/`id -un`/" -i'' app/config/parameters.yml.dist"
+  - sed -e "s/mysql/$DB/;/database_user/s/root/`id -un`/" -i'' app/config/parameters.yml.dist
   - composer install
   - cat app/config/parameters.yml
 
