@@ -9,8 +9,10 @@ matrix:
   fast_finish: true
 
 install:
+  - id -un
   - sh -c "sed -e "s/mysql/$DB/;/database_user/s/root/`id -un`/" -i'' app/config/parameters.yml.dist"
   - composer install
+  - cat app/config/parameters.yml
 
 script: vendor/bin/phpunit
 services:
