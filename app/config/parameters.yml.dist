@@ -24,3 +24,4 @@ parameters:
     queue.pass: guest
     queue.vhost: /
     keepalive.time: 5
+    workers: 3
