@@ -33,7 +33,7 @@ class JobRun {
     protected $time;
 
     /**
-     * @ORM\OneToOne(targetEntity="JobRunOutput", inversedBy="run", cascade={"persist","remove"}, fetch = "EXTRA_LAZY")
+     * @ORM\OneToOne(targetEntity="JobRunOutput", cascade={"persist","remove"}, fetch = "EXTRA_LAZY")
      */
     protected $output;
 
@@ -113,7 +113,17 @@ class JobRun {
     }
 
     public function getRunTimeInterval() {
-        return new \DateInterval('PT' . $this->runTime . 'S');
+        if ($this->runTime > 0) {
+            if ($this->time) {
+                $t1 = $this->time;
+            } else {
+                $t1 = new \DateTime();
+            }
+            $t2 = clone $t1;
+            $t2->add(new \DateInterval('PT' . $this->runTime . 'S'));
+            return $t1->diff($t2);
+        }
+        return null;
     }
 
     /**

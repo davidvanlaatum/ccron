@@ -47,30 +47,27 @@ class JobTest extends KernelTestCase {
             'type' => 'command',
             'command' => 'echo hi all'
         ];
-        self::assertSetters($job, $this->em, $data);
-        self::assertGetters($job, $this->em, $data);
-        $this->em->persist($job);
-        $this->em->flush();
-        $this->em->refresh($job);
-        $data['nextRun'] = ['expected' => self::isInstanceOf(\DateTime::class), 'value' => null];
-        self::assertGetters($job, $this->em, $data);
+        self::assertGettersAndSetters($job, $this->em, $data, function ($data) {
+            $data['nextRun'] = ['expected' => self::isInstanceOf(\DateTime::class), 'value' => null];
+            return $data;
+        });
     }
 
     public function testGetLastRunTimeInterval() {
         $job = new Job();
         self::assertNull($job->getLastRunTimeInterval());
         $job->setLastRunTime(1);
-        self::assertEquals(new \DateInterval("PT1S"), $job->getLastRunTimeInterval());
+        self::assertEquals(new \DateInterval('PT1S'), $job->getLastRunTimeInterval());
         $job->setLastRun(new \DateTime('2000-01-01'));
-        $job->setLastRunTime(60);
-        self::assertEquals(new \DateInterval("PT1M"), $job->getLastRunTimeInterval());
+        $job->setLastRunTime(3665);
+        self::assertEquals(new \DateInterval('PT1H1M5S'), $job->getLastRunTimeInterval());
     }
 
     public function testRuns() {
         $job = new Job();
         $job->setName("A Test Job");
-        $job->setCronSchedule("@daily");
-        $job->setCommand("echo hi all");
+        $job->setCronSchedule('@daily');
+        $job->setCommand('echo hi all');
         $this->em->persist($job);
         $run = new JobRun();
         $run->setJob($job);

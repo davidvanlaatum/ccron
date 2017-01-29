@@ -17,12 +17,6 @@ class JobRunOutput {
     protected $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="JobRun", mappedBy="output")
-     * @var JobRun
-     */
-    protected $run;
-
-    /**
      * @ORM\Column(type="text",nullable=true)
      * @var string
      */
@@ -33,20 +27,6 @@ class JobRunOutput {
      */
     public function getId() {
         return $this->id;
-    }
-
-    /**
-     * @return JobRun
-     */
-    public function getRun() {
-        return $this->run;
-    }
-
-    /**
-     * @param JobRun $run
-     */
-    public function setRun($run) {
-        $this->run = $run;
     }
 
     /**

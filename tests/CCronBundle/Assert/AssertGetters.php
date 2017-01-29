@@ -41,6 +41,15 @@ class AssertGetters extends DescribingMatcher {
                     }
                 }
             }
+            foreach ($meta->getAssociationNames() as $field) {
+                if (!$meta->isIdentifier($field)) {
+                    if ($meta->isSingleValuedAssociation($field)) {
+                        if (!$this->data->hasField($field)) {
+                            $missingFields[] = $field;
+                        }
+                    }
+                }
+            }
             if ($this->em->contains($object)) {
                 foreach ($meta->getIdentifierFieldNames() as $index => $field) {
                     $getter = self::findGetter($object, $field);
@@ -56,12 +65,14 @@ class AssertGetters extends DescribingMatcher {
             }
         }
         foreach ($this->data->getFields() as $field) {
-            if ($meta && !$meta->hasField($field)) {
+            if ($meta && !($meta->hasField($field) || $meta->hasAssociation($field))) {
                 $constraints[] = new AlwaysFailConstraint("Unknown field $field");
             } else {
                 $getter = self::findGetter($object, $field);
                 if (!$getter) {
                     $constraints[] = new AlwaysFailConstraint("Missing getter for $field");
+                } else if ($meta->hasAssociation($field)) {
+                    $constraints[] = UnitTestHelpers::methodReturns($getter, UnitTestHelpers::sameEntity($this->data->getExpectedValue($field), $this->em));
                 } else {
                     $constraints[] = UnitTestHelpers::methodReturns($getter, $this->data->getExpectedValue($field));
                 }

@@ -36,7 +36,7 @@ class AssertSetters extends DescribingMatcher {
             }
         }
         foreach ($this->data->getFields() as $field) {
-            if ($meta && !$meta->hasField($field)) {
+            if ($meta && !($meta->hasField($field) || $meta->hasAssociation($field))) {
                 $constraints[] = new AlwaysFailConstraint("Unknown field $field");
             } else {
                 $setter = self::findSetter($object, $field);
