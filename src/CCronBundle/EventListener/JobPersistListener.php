@@ -10,6 +10,8 @@ class JobPersistListener {
     /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
+     * @param Job $job
+     * @param LifecycleEventArgs $args
      */
     public function prePersist(Job $job, LifecycleEventArgs $args) {
         $em = $args->getEntityManager();

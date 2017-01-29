@@ -3,8 +3,6 @@ namespace CCronBundle\Cron;
 
 use OldSound\RabbitMqBundle\RabbitMq\BaseConsumer;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
-use Symfony\Bridge\Monolog\Logger;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 class MultiConsumer extends BaseConsumer {
     /** @var BaseConsumer[] */
@@ -84,6 +82,7 @@ class MultiConsumer extends BaseConsumer {
                 }
             }
         }
+        return null;
     }
 
     public function startConsuming() {

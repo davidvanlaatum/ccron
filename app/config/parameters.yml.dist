@@ -25,3 +25,4 @@ parameters:
     queue.vhost: /
     keepalive.time: 5
     workers: 3
+    database_unit_name: tests

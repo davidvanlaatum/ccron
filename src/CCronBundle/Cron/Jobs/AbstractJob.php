@@ -2,7 +2,6 @@
 namespace CCronBundle\Cron\Jobs;
 
 use CCronBundle\Entity\Job as JobEntity;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class AbstractJob implements Job {
     protected $id;

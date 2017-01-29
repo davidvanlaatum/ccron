@@ -9,7 +9,6 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;
 use OldSound\RabbitMqBundle\RabbitMq\Consumer;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
-use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Bridge\Monolog\Logger;
 
 class Master {
@@ -108,7 +107,7 @@ class Master {
     protected function updateStats() {
         $this->logger->debug("Updating stats");
         $this->entityManager->transactional(function (EntityManager $em) {
-            $state = $em->find(CurrentState::class, 1, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+            $state = $em->find(CurrentState::class, 1, LockMode::PESSIMISTIC_WRITE);
             if (!$state) {
                 $state = new CurrentState(1);
             }

@@ -13,11 +13,6 @@
             <set />
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/.gitignore">
-          <value>
-            <set />
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/.idea/php-docker-settings.xml">
           <value>
             <set />
@@ -33,117 +28,7 @@
             <set />
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/.travis.yml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/README.md">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/AppKernel.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/Resources/views/base.html.twig">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/Resources/views/default/builds.html.twig">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/Resources/views/default/editjob.html.twig">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/Resources/views/default/index.html.twig">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/Resources/views/default/recentbuilds.html.twig">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/Resources/views/form/fields.html.twig">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/Resources/views/job.html.twig">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/config/config.yml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/config/config_dev.yml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/config/parameters.yml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/config/parameters.yml.dist">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/config/routing.yml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/config/services.yml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/bin/symfony_requirements">
-          <value>
-            <set />
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/ccron.iml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/composer.json">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/composer.lock">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/docker-compose.yml">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/php7-fpm/Dockerfile">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/phpunit.xml.dist">
           <value>
             <set />
           </value>
@@ -363,32 +248,12 @@
             <set />
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/CCronBundle.php">
+        <entry key="$PROJECT_DIR$/src/CCronBundle/CCronExtension.php">
           <value>
             <set />
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Command/CronCommand.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Command/MasterCommand.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Controller/DefaultController.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Controller/JobForm.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/CronConsumer.php">
+        <entry key="$PROJECT_DIR$/src/CCronBundle/CCronExtention.php">
           <value>
             <set />
           </value>
@@ -398,17 +263,7 @@
             <set />
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/JobTracker.php">
-          <value>
-            <set />
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/Jobs/AbstractJob.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/Jobs/Command.php">
           <value>
             <set />
           </value>
@@ -428,47 +283,12 @@
             <set />
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/Runner.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Cron/Running.php">
+        <entry key="$PROJECT_DIR$/src/CCronBundle/DependencyInjection/CCronExtension.php">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/src/CCronBundle/Entity/Job.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Entity/JobRun.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Entity/JobRunOutput.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/EventListener/JobPersistListener.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Events/EventSender.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Form/CronType.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/src/CCronBundle/Validator/Constraints/Cron.php">
           <value>
             <set />
           </value>
@@ -493,7 +313,27 @@
             <set />
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/tests/CCronBundle/Controller/DefaultControllerTest.php">
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/Assert/AssertGetters.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/Assert/AssertSetters.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/Assert/DescribingMatcher.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/Assert/GetSetData.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/Assert/MethodAccepts.php">
           <value>
             <set />
           </value>
@@ -503,22 +343,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/MethodReturns.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/UnitTestHelpers.php">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/var/cache/dev/AppKernelTest.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/var/cache/dev/CCronDevDebugProjectContainer.php">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/var/logs/dev.log">
-          <value>
-            <set />
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/var/logs/prod.log">
           <value>
             <set />
           </value>

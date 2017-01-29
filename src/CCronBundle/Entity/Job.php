@@ -143,10 +143,21 @@ class Job {
         $this->lastRunTime = $lastRunTime;
     }
 
+    /**
+     * @return \DateInterval|null
+     */
     public function getLastRunTimeInterval() {
         if ($this->lastRunTime > 0) {
-            return new \DateInterval('PT' . $this->lastRunTime . 'S');
+            if ($this->lastRun) {
+                $t1 = $this->lastRun;
+            } else {
+                $t1 = new \DateTime();
+            }
+            $t2 = clone $t1;
+            $t2->add(new \DateInterval('PT' . $this->lastRunTime . 'S'));
+            return $t1->diff($t2);
         }
+        return null;
     }
 
     /**
@@ -182,12 +193,5 @@ class Job {
      */
     public function getRuns() {
         return $this->runs;
-    }
-
-    /**
-     * @param mixed $runs
-     */
-    public function setRuns($runs) {
-        $this->runs = $runs;
     }
 }

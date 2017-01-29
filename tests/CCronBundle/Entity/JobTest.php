@@ -1,20 +1,25 @@
 <?php
 
-namespace CCronBundle\Entity;
+namespace Tests\CCronBundle\Entity;
 
-use Doctrine\ORM\EntityManager;
+use CCronBundle\Entity\Job;
+use CCronBundle\Entity\JobRun;
+use Tests\CCronBundle\ContainerAwareTestCase;
+use Tests\CCronBundle\DBAwareTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tests\CCronBundle\Assert\UnitTestHelpers;
 
+/**
+ * @covers \CCronBundle\Entity\Job
+ */
 class JobTest extends KernelTestCase {
+    use ContainerAwareTestCase;
+    use DBAwareTestTrait;
+    use UnitTestHelpers;
 
-    /** @var EntityManager */
-    protected $em;
-
-    public static function setUpBeforeClass() {
-        parent::setUpBeforeClass();
-        self::bootKernel();
-    }
-
+    /**
+     * @covers \CCronBundle\EventListener\JobPersistListener
+     */
     public function testUpdatesNextRunCorrectly() {
         $job = new Job();
         $job->setName("A Test Job");
@@ -31,14 +36,52 @@ class JobTest extends KernelTestCase {
         self::assertNotEquals($previous, $job->getNextRun());
     }
 
-    protected function setUp() {
-        parent::setUp();
-        $this->em = static::$kernel->getContainer()->get("doctrine.orm.default_entity_manager");
-        $this->em->beginTransaction();
+    public function testSettersAndGetters() {
+        $job = new Job();
+        $data = [
+            'name' => 'A Test Job',
+            'cronSchedule' => '@daily',
+            'nextRun' => null,
+            'lastRun' => null,
+            'lastRunTime' => 1,
+            'type' => 'command',
+            'command' => 'echo hi all'
+        ];
+        self::assertSetters($job, $this->em, $data);
+        self::assertGetters($job, $this->em, $data);
+        $this->em->persist($job);
+        $this->em->flush();
+        $this->em->refresh($job);
+        $data['nextRun'] = ['expected' => self::isInstanceOf(\DateTime::class), 'value' => null];
+        self::assertGetters($job, $this->em, $data);
     }
 
-    protected function tearDown() {
-        $this->em->rollback();
-        parent::tearDown();
+    public function testGetLastRunTimeInterval() {
+        $job = new Job();
+        self::assertNull($job->getLastRunTimeInterval());
+        $job->setLastRunTime(1);
+        self::assertEquals(new \DateInterval("PT1S"), $job->getLastRunTimeInterval());
+        $job->setLastRun(new \DateTime('2000-01-01'));
+        $job->setLastRunTime(60);
+        self::assertEquals(new \DateInterval("PT1M"), $job->getLastRunTimeInterval());
+    }
+
+    public function testRuns() {
+        $job = new Job();
+        $job->setName("A Test Job");
+        $job->setCronSchedule("@daily");
+        $job->setCommand("echo hi all");
+        $this->em->persist($job);
+        $run = new JobRun();
+        $run->setJob($job);
+        $run->setTime(new \DateTime());
+        $run->setRunTime(0);
+        $run->setHost("Host");
+        $this->em->persist($run);
+        $this->em->flush();
+        $this->em->clear();
+
+        $job = $this->em->find(Job::class, $job->getId());
+        self::assertCount(1, $job->getRuns());
     }
 }

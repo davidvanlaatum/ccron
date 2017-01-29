@@ -2,7 +2,6 @@
 namespace CCronBundle\Cron\Jobs;
 
 use CCronBundle\Entity\JobRun;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 interface Job {
     function execute();

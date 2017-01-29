@@ -26,13 +26,16 @@
         "qxsch/worker-pool": "^1.4",
         "mtdowling/cron-expression": "^1.1",
         "fxp/composer-asset-plugin": "^1.2",
-        "bower-asset/bootstrap": "^3.3"
+      "bower-asset/bootstrap": "^3.3",
+      "doctrine/doctrine-fixtures-bundle": "^2.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^3.0",
         "phpunit/phpunit": "^5",
-        "phpunit/phpcov": "^3.1"
+      "phpunit/phpcov": "^3.1",
+      "sebastian/phpcpd": "^2.0",
+      "squizlabs/php_codesniffer": "*"
     },
     "scripts": {
         "symfony-scripts": [

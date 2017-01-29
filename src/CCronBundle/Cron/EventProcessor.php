@@ -17,6 +17,7 @@ class EventProcessor implements ConsumerInterface, ContainerAwareInterface {
      */
     public function execute(AMQPMessage $msg) {
         $this->process($this->container->get("event_sender")->receive($msg));
+        return true;
     }
 
     public function process(Event $event) {
