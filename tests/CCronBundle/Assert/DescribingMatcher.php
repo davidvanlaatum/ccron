@@ -6,6 +6,16 @@ abstract class DescribingMatcher extends \PHPUnit_Framework_Constraint {
     protected $lastObject;
     protected $lastDescription;
 
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return string
+     */
+    public function toString() {
+        list($match, $description) = $this->matchesDescribing(null);
+        return $description;
+    }
+
     protected function matches($other) {
         try {
             $this->lastObject = $other;

@@ -2,7 +2,6 @@
 namespace Tests\CCronBundle\Assert;
 
 use Doctrine\ORM\EntityManager;
-use PHPUnit_Framework_Constraint_And;
 
 class AssertSetters extends DescribingMatcher {
 
@@ -16,21 +15,11 @@ class AssertSetters extends DescribingMatcher {
     }
 
     /**
-     * Returns a string representation of the object.
-     *
-     * @return string
-     */
-    public function toString() {
-        return $this->matchesDescribing(null)[1];
-    }
-
-    /**
-     * @param $other
+     * @param $object
      * @return array
      */
     protected function matchesDescribing($object) {
         $constraints = [];
-        $constraint = null;
         $meta = null;
         if ($object) {
             $meta = $this->em->getClassMetadata(get_class($object));
@@ -43,18 +32,20 @@ class AssertSetters extends DescribingMatcher {
                 }
             }
             if (!empty($missingFields)) {
-                $constraint = new AlwaysFailConstraint("all fields are covered, missing " . implode(", ", $missingFields));
+                $constraints[] = new AlwaysFailConstraint("The following fields are missing " . implode(", ", $missingFields));
             }
         }
         foreach ($this->data->getFields() as $field) {
             if ($meta && !$meta->hasField($field)) {
-                $constraint = new AlwaysFailConstraint("Unknown field $field");
+                $constraints[] = new AlwaysFailConstraint("Unknown field $field");
+            } else {
+                $setter = self::findSetter($object, $field);
+                if (!$setter) {
+                    $constraints[] = new AlwaysFailConstraint("Missing setter for $field");
+                } else {
+                    $constraints[] = UnitTestHelpers::methodAccepts($setter, [$this->data->getValue($field)]);
+                }
             }
-            $setter = self::findSetter($object, $field);
-            if (!$setter) {
-//                self::fail($object, "Missing setter for $field");
-            }
-            $constraints[] = UnitTestHelpers::methodAccepts($setter, [$this->data->getValue($field)]);
         }
         $matches = true;
         $failures = [];

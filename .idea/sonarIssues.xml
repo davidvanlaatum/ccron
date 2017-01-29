@@ -33,6 +33,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/composer.json">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/AppBundle/AppBundle.php">
           <value>
             <set />
@@ -334,6 +339,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/tests/CCronBundle/Assert/MethodAccepts.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tests/CCronBundle/Assert/UnitTestHelpers.php">
           <value>
             <set />
           </value>

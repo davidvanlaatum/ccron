@@ -25,7 +25,7 @@ class AssertGetters extends DescribingMatcher {
     }
 
     /**
-     * @param $other
+     * @param $object
      * @return array
      */
     protected function matchesDescribing($object) {
@@ -34,7 +34,6 @@ class AssertGetters extends DescribingMatcher {
         if ($object) {
             $meta = $this->em->getClassMetadata(get_class($object));
             $missingFields = [];
-            $constraint = null;
             foreach ($meta->getFieldNames() as $field) {
                 if (!$meta->isIdentifier($field)) {
                     if (!$this->data->hasField($field)) {
@@ -46,24 +45,27 @@ class AssertGetters extends DescribingMatcher {
                 foreach ($meta->getIdentifierFieldNames() as $index => $field) {
                     $getter = self::findGetter($object, $field);
                     if (!$getter) {
-                        self::fail($object, "Missing getter for $field");
+                        $constraints[] = new AlwaysFailConstraint("Missing getter for $field");
+                    } else {
+                        $constraints[] = UnitTestHelpers::methodReturns($getter, $meta->getIdentifierValues($object)[$field]);
                     }
-                    $constraints[] = UnitTestHelpers::methodReturns($getter, $meta->getIdentifierValues($object)[$field]);
                 }
             }
             if (!empty($missingFields)) {
-                self::fail($object, "The following fields are missing " . implode(", ", $missingFields));
+                $constraints[] = new AlwaysFailConstraint("The following fields are missing " . implode(", ", $missingFields));
             }
         }
         foreach ($this->data->getFields() as $field) {
             if ($meta && !$meta->hasField($field)) {
-                self::fail($object, "Unknown field $field");
+                $constraints[] = new AlwaysFailConstraint("Unknown field $field");
+            } else {
+                $getter = self::findGetter($object, $field);
+                if (!$getter) {
+                    $constraints[] = new AlwaysFailConstraint("Missing getter for $field");
+                } else {
+                    $constraints[] = UnitTestHelpers::methodReturns($getter, $this->data->getExpectedValue($field));
+                }
             }
-            $getter = self::findGetter($object, $field);
-            if (!$getter) {
-                self::fail($object, "Missing getter for $field");
-            }
-            $constraints[] = UnitTestHelpers::methodReturns($getter, $this->data->getExpectedValue($field));
         }
         $matches = true;
         $failures = [];
@@ -73,6 +75,7 @@ class AssertGetters extends DescribingMatcher {
                 $failures[] = $c->failureDescription($object);
             }
         }
+        $failures = array_unique($failures);
         return [$matches, implode(" and ", $failures)];
     }
 
