@@ -14,7 +14,10 @@ install:
   - composer install
   - cat app/config/parameters.yml
 
-script: vendor/bin/phpunit
+script:
+  - vendor/bin/phpunit
+  - vendor/bin/phpcpd --fuzzy src/ tests/
+
 services:
   - mysql
   - postgresql
