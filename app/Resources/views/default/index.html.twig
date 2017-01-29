@@ -7,7 +7,7 @@
 {% block body %}
     <div id="wrapper">
         <div id="container">
-            <table class="table table-striped table-hover table-condensed">
+            <table class="table table-striped table-hover table-condensed jobs-table">
                 <thead>
                 <tr>
                     <th class="col-sm-3">Name</th>
@@ -20,12 +20,12 @@
                 </thead>
                 <tbody>
                 {% for job in jobs %}
-                    <tr>
-                        <td>{{ job.name }}</td>
-                        <td>{{ job.cronschedule }}</td>
-                        <td>{% if job.lastRun %}{{ job.lastRun | date }}{% endif %}</td>
-                        <td>{{ job.nextRun | date }}</td>
-                        <td>{{ job.lastRunTimeInterval | date }}</td>
+                    <tr job-id="{{ job.id }}">
+                        <td class="job-name">{{ job.name }}</td>
+                        <td class="job-schedule">{{ job.cronschedule }}</td>
+                        <td class="job-last-run">{% if job.lastRun %}{{ job.lastRun | date }}{% endif %}</td>
+                        <td class="job-next-run">{{ job.nextRun | date }}</td>
+                        <td class="job-last-run-interval">{% if job.lastRunTime %}{{ job.lastRunTimeInterval | date }}{% endif %}</td>
                         <td>
                             <a class="btn btn-default btn-xs" href="{{ path('editjob',{'id': job.id}) }}">
                                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
@@ -49,11 +49,12 @@
                 </tfoot>
             </table>
 
-            <table id="recentbuilds" class="table table-striped table-hover table-condensed">
+            <table id="recentbuilds" class="table table-striped table-hover table-condensed recent-bulds-table">
                 <thead>
                 <tr>
                     <th>Job</th>
                     <th>Run</th>
+                    <th>Host</th>
                     <th>Time</th>
                     <th>Run Time</th>
                     <th></th>

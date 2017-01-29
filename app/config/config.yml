@@ -40,7 +40,7 @@ twig:
     strict_variables: "%kernel.debug%"
     date:
         format: Y-m-d H:i:s
-        interval_format: '%%hh%%mm%%ss'
+        interval_format: '%%hh%%im%%ss'
     form_themes:
       - 'form/fields.html.twig'
       - 'bootstrap_3_horizontal_layout.html.twig'

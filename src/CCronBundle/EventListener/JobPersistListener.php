@@ -17,7 +17,7 @@ class JobPersistListener {
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
         $cs = $uow->getEntityChangeSet($job);
-        if (isset($cs['cronSchedule']) || ($job->getCronSchedule() && !$job->getNextRun())) {
+        if ((isset($cs['cronSchedule']) && !isset($cs['nextRun'])) || ($job->getCronSchedule() && !$job->getNextRun())) {
             $job->setNextRun(CronExpression::factory($job->getCronSchedule())->getNextRunDate());
         }
     }

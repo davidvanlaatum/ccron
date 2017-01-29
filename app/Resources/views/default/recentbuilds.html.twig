@@ -1,9 +1,10 @@
 {% for build in builds %}
-    <tr>
-        <td>{{ build.job.name }}</td>
-        <td>{{ build.id }}</td>
-        <td>{{ build.time | date }}</td>
-        <td>{{ build.runTime }}</td>
+    <tr build-id="{{ build.id }}">
+        <td class="build-name">{{ build.job.name }}</td>
+        <td class="build-id">{{ build.id }}</td>
+        <td class="build-host">{{ build.host }}</td>
+        <td class="build-time">{{ build.time | date }}</td>
+        <td class="build-runtime">{{ build.runTimeInterval | date }}</td>
         <td><a class="btn btn-default btn-xs" href="{{ path('viewconsole', {'id': build.id, 'job': build.job.id}) }}"><span
                         class="glyphicon glyphicon-console"></span></a></td>
     </tr>

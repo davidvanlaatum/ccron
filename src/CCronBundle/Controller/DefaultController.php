@@ -13,8 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 class DefaultController extends Controller {
     /**
      * @Route("/", name="homepage")
+     * @return Response
      */
-    public function indexAction(Request $request) {
+    public function indexAction() {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $query = $em->getRepository(Job::class)->createNamedQuery("jobs.all");
@@ -94,8 +95,10 @@ class DefaultController extends Controller {
 
     /**
      * @Route("/job/{id}/builds", name="viewbuilds")
+     * @param $id
+     * @return Response
      */
-    public function viewBuilds(Request $request, $id) {
+    public function viewBuilds($id) {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $query = $em->getRepository(JobRun::class)->createNamedQuery("findForJob");
@@ -110,8 +113,10 @@ class DefaultController extends Controller {
 
     /**
      * @Route("/job/{job}/console/{id}", name="viewconsole")
+     * @param $id
+     * @return Response
      */
-    public function viewConsole(Request $request, $id) {
+    public function viewConsole($id) {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $run = $em->find(JobRun::class, $id);
