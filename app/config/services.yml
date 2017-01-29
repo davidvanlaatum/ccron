@@ -1,15 +1,29 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/service_container.html
 parameters:
-  workers: 3
-  keepalive.time: 5
 
 services:
+  command.cron:
+    class: CCronBundle\Command\CronCommand
+    tags:
+        - { name: console.command }
+  command.master:
+    class: CCronBundle\Command\MasterCommand
+    tags:
+        - { name: console.command }
   cronrunner:
     class: CCronBundle\Cron\Runner
     lazy: true
     calls:
-      - [setContainer, ['@service_container']]
+      - [setWorkerPool, ['@workerpool']]
+      - [setJobTracker, ['@job_tracker']]
+      - [setLogger, ['@logger']]
+      - [setMultiConsumer, ['@multi.consumer']]
+      - [setRunning, ['@running']]
+      - [setControlConsumer, ['@old_sound_rabbit_mq.control_consumer']]
+      - [setCronConsumer, ['@cron_consumer']]
+      - [setEntityManager, ['@doctrine.orm.default_entity_manager']]
+      - [setWorkers, ['%workers%']]
   workerpool:
     class: QXS\WorkerPool\WorkerPool
     lazy: true
@@ -32,7 +46,15 @@ services:
     class: CCronBundle\Cron\Master
     lazy: true
     calls:
-      - [setContainer, ['@service_container']]
+      - [setEntityManager, ['@doctrine.orm.default_entity_manager']]
+      - [setFailoverTracker, ['@failover_tracker']]
+      - [setRPCServer, ['@old_sound_rabbit_mq.rpc_servers_consumer']]
+      - [setKeepaliveConsumer, ['@old_sound_rabbit_mq.keepalive_consumer']]
+      - [setMasterConsumer, ['@multi.consumer']]
+      - [setLogger, ['@logger']]
+      - [setCronProducer, ['@old_sound_rabbit_mq.cron_producer']]
+      - [setHostnameDeterminer, ['@hostname_determiner']]
+      - [setRunning, ['@running']]
   failover_tracker:
     class: CCronBundle\Cron\FailoverTracker
     lazy: true
@@ -45,18 +67,36 @@ services:
   rpc_server:
     class: CCronBundle\Cron\RPCServer
     lazy: true
-  master_consumer:
+  multi.consumer:
     arguments: ['@old_sound_rabbit_mq.connection.default',null,null]
     class: CCronBundle\Cron\MultiConsumer
     lazy: true
     calls:
-      - [setContainer, ['@service_container']]
       - [setIdleTimeout, ['1']]
       - [setIdleTimeoutExitCode, ['0']]
+      - [setHostnameDeterminer, ['@hostname_determiner']]
+      - [setLogger, ['@logger']]
   running:
     class: CCronBundle\Cron\Running
+    lazy: true
+    arguments: [ '@logger' ]
   event_sender:
     class: CCronBundle\Events\EventSender
+    lazy: true
     calls:
       - [setContainer, ['@service_container']]
+  cron_consumer:
+    class: CCronBundle\Cron\CronConsumer
     lazy: true
+    arguments: [ '@old_sound_rabbit_mq.connection.default',null,null]
+    calls:
+      - [setCallback, [['@cronrunner','execute']]]
+      - [setExchangeOptions, [{name: 'cron', type: direct}]]
+      - [setQueueOptions, [{name: 'cron'}]]
+      - [setQosOptions, ['0', '%workers%', 'false']]
+
+    app.form.type.cron:
+        class: CCronBundle\Form\CronType
+        lazy: true
+        tags:
+            - { name: form.type }

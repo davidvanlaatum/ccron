@@ -14,14 +14,17 @@ class JobTracker implements ContainerAwareInterface {
     /** @var TrackedJob[] */
     protected $inProgressJobs = [];
 
-    function jobStarted($workerId, Job $job) {
+    function jobStarted($workerId, Job $job, $attachment = null) {
         $this->container->get("logger")->debug("Job Started", ["worker" => $workerId, "id" => $job->getId(), "name" => $job->getName()]);
-        $this->inProgressJobs[$workerId] = new TrackedJob($job, $workerId);
+        $this->inProgressJobs[$workerId] = new TrackedJob($job, $workerId, $attachment);
     }
 
     function jobFinished($workerId, Job $job = null) {
+        $rt = null;
+        $trackedJob = $this->inProgressJobs[$workerId];
+        $rt = $trackedJob->getAttachment();
         if ($job == null) {
-            $job = $this->inProgressJobs[$workerId]->getJob();
+            $job = $trackedJob->getJob();
         }
         $this->container->get("logger")->debug("Job Finished", ["worker" => $workerId, "id" => $job->getId(), "name" => $job->getName(), "output" => $job instanceof Command ? $job->getOutput() : null]);
 
@@ -36,24 +39,28 @@ class JobTracker implements ContainerAwareInterface {
             $log->setJob($dbjob);
             $log->setTime(new \DateTime());
             $job->fillInLog($log);
+            $log->setHost($this->container->get("hostname_determiner")->get());
             $em->persist($log);
             $em->flush();
         });
+        return $rt;
     }
 }
 
 class TrackedJob {
     protected $job;
     protected $worker;
+    protected $attachment;
 
     /**
      * TrackedJob constructor
      * @param Job $job
      * @param mixed $worker
      */
-    public function __construct(Job $job, $worker) {
+    public function __construct(Job $job, $worker, $attachment) {
         $this->job = $job;
         $this->worker = $worker;
+        $this->attachment = $attachment;
     }
 
     /**
@@ -68,5 +75,12 @@ class TrackedJob {
      */
     public function getWorker() {
         return $this->worker;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAttachment() {
+        return $this->attachment;
     }
 }

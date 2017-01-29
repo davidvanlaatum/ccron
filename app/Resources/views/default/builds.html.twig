@@ -1,21 +1,20 @@
-{% extends 'base.html.twig' %}
+{% extends 'job.html.twig' %}
 
-{% block pagetitle %}
-    <h1>Builds for {{ job.name }}</h1>
+{% block breadcrums %}
+    {{ parent() }}
+    <li>Builds</li>
 {% endblock %}
 
 {% block body %}
     <div id="wrapper">
         <div id="container">
             <table class="table table-striped table-hover table-condensed">
-                <colgroup>
-                    <col class="col-sm-3">
-                    <col class="col-sm-3">
-                </colgroup>
                 <thead>
                 <tr>
-                    <th class="col-sm-3">ID</th>
+                    <th class="col-sm-1">ID</th>
                     <th class="col-sm-3">Time</th>
+                    <th class="col-sm-2">Run Time</th>
+                    <th class="col-sm-2">Host</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -24,7 +23,9 @@
                     <tr>
                         <td>{{ build.id }}</td>
                         <td>{{ build.time | date }}</td>
-                        <td><a class="btn btn-default btn-xs" href="{{ path('viewconsole', {'id': build.id}) }}"><span
+                        <td>{{ build.runTimeInterval | date }}</td>
+                        <td>{{ build.host }}</td>
+                        <td><a class="btn btn-default btn-xs" href="{{ path('viewconsole', {'id': build.id, 'job': job.id}) }}"><span
                                         class="glyphicon glyphicon-console"></span></a></td>
                     </tr>
                 {% else %}

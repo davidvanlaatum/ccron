@@ -41,6 +41,9 @@ twig:
     date:
         format: Y-m-d H:i:s
         interval_format: '%%hh%%mm%%ss'
+    form_themes:
+      - 'form/fields.html.twig'
+      - 'bootstrap_3_horizontal_layout.html.twig'
 # Doctrine Configuration
 doctrine:
     dbal:
@@ -74,11 +77,11 @@ swiftmailer:
 old_sound_rabbit_mq:
   connections:
     default:
-      host:     'localhost'
-      port:     5672
-      user:     'guest'
-      password: 'guest'
-      vhost:    '/'
+      host:     '%queue.host%'
+      port:     '%queue.port%'
+      user:     '%queue.user%'
+      password: '%queue.pass%'
+      vhost:    '%queue.vhost%'
       lazy:     true
       connection_timeout: 3
       read_write_timeout: 30
@@ -100,14 +103,14 @@ old_sound_rabbit_mq:
       exchange_options: {name: 'cron', type: direct}
       queue_options:    {name: 'cron'}
   consumers:
-    cron:
-      connection:       default
-      exchange_options: {name: 'cron', type: direct}
-      queue_options:    {name: 'cron'}
-      callback:         cronrunner
-      idle_timeout:     10
-      idle_timeout_exit_code: 0
-      qos_options:      {prefetch_size: 0, prefetch_count: '%workers%', global: false}
+#    cron:
+#      connection:       default
+#      exchange_options: {name: 'cron', type: direct}
+#      queue_options:    {name: 'cron'}
+#      callback:         cronrunner
+#      idle_timeout:     10
+#      idle_timeout_exit_code: 0
+#      qos_options:      {prefetch_size: 0, prefetch_count: '%workers%', global: false}
     events:
       connection:       default
       exchange_options: {name: 'events', type: topic}
@@ -118,7 +121,7 @@ old_sound_rabbit_mq:
       callback:         events
       idle_timeout:     1
       idle_timeout_exit_code: 0
-      qos_options:      {prefetch_size: 0, prefetch_count: 1, global: true}
+      qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
     keepalive:
       connection:       default
       exchange_options: {name: 'events', type: topic}
@@ -128,7 +131,7 @@ old_sound_rabbit_mq:
       callback:         failover_tracker
       idle_timeout:     1
       idle_timeout_exit_code: 0
-      qos_options:      {prefetch_size: 0, prefetch_count: 1, global: true}
+      qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
     control:
       connection:       default
       exchange_options: {name: 'events', type: topic}
@@ -138,10 +141,9 @@ old_sound_rabbit_mq:
       callback:         events
       idle_timeout:     1
       idle_timeout_exit_code: 0
-      qos_options:      {prefetch_size: 0, prefetch_count: 1, global: true}
     rpc_servers:
       connection:       default
       exchange_options: {name: 'master.rpc', type: direct}
       queue_options:    {name: 'master.rpc'}
-      qos_options:      {prefetch_size: 0, prefetch_count: 1, global: true}
+      qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
       callback:         rpc_server

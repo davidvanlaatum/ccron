@@ -18,3 +18,9 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+    queue.host: localhost
+    queue.port: 5672
+    queue.user: guest
+    queue.pass: guest
+    queue.vhost: /
+    keepalive.time: 5

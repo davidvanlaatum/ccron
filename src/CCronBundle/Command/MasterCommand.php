@@ -19,26 +19,11 @@ class MasterCommand extends ContainerAwareCommand {
         if ($name) {
             $this->getContainer()->get("hostname_determiner")->set($name);
         }
-        $master = $this->getContainer()->get("master");
-        $consumer = $this->getContainer()->get("master_consumer");
-        $consumer->addSubQueue($this->getContainer()->get("old_sound_rabbit_mq.keepalive_consumer"));
-        $consumer->startConsuming();
-        $rpcServer = $this->getContainer()->get("old_sound_rabbit_mq.rpc_servers_consumer");
         $failoverTracker = $this->getContainer()->get("failover_tracker");
         if ($input->getOption("master")) {
             $failoverTracker->setMaster();
         }
-        $running = $this->getContainer()->get("running");
-        while ($running->isRunning()) {
-            $consumer->consume();
-            $failoverTracker->check();
-            if ($failoverTracker->isMaster()) {
-                $consumer->addSubQueue($rpcServer);
-                $master->scheduleWork();
-            } else {
-                $consumer->removeSubQueue($rpcServer);
-            }
-            $this->getContainer()->get("doctrine.orm.default_entity_manager")->clear();
-        }
+        $master = $this->getContainer()->get("master");
+        $master->run();
     }
 }

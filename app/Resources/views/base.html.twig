@@ -10,8 +10,17 @@
         <script src="{{ asset("assets/vendor/bootstrap/dist/js/bootstrap.js") }}" rel="script" type="application/javascript"></script>
     </head>
     <body>
-    {% block pagetitle %}{% endblock %}
+    <nav>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('homepage') }}">Home</a></li>
+            {% block breadcrums %}{% endblock %}
+        </ol>
+    </nav>
+    <div class="container">
+        <div class="container-fluid">
         {% block body %}{% endblock %}
+        </div>
+    </div>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

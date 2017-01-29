@@ -1,0 +1,6 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrums %}
+    {{ parent() }}
+    <li><a href="{% block breadcrumurl %}{{ path('editjob', {'id': job.id}) }}{% endblock %}">{% block breadcrumname %}{{ job.name }}{% endblock %}</a></li>
+{% endblock %}

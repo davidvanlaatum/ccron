@@ -1,9 +1,29 @@
-{% extends 'base.html.twig' %}
-{% form_theme jobform 'bootstrap_3_horizontal_layout.html.twig' %}
+{% extends 'job.html.twig' %}
 
-{% block pagetitle %}
-    <h1>Edit Job</h1>
+{% block title %}
+    {% if job is defined %}
+        Edit Job - {{ job.name }}
+    {% else %}
+        Add Job
+    {% endif %}
 {% endblock %}
+
+{% block breadcrumname %}
+    {% if job is defined %}
+        {{ parent() }}
+    {% else %}
+        Add Job
+    {% endif %}
+{% endblock %}
+
+{% block breadcrumurl %}
+    {% if job is defined %}
+        {{ parent() }}
+    {% else %}
+        {{ path('addjob') }}
+    {% endif %}
+{% endblock %}
+
 {% block body %}
     <div id="wrapper">
         <div id="container">

@@ -5,7 +5,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="jobs")
+ * @ORM\EntityListeners({"CCronBundle\EventListener\JobPersistListener"})
+ * @ORM\Table(name="jobs",uniqueConstraints={@ORM\UniqueConstraint(name="job_name", columns={"name"})})
  * @ORM\NamedQueries(value = {
  *     @ORM\NamedQuery(name="poll.work",query="SELECT j FROM __CLASS__ j WHERE j.nextRun IS NULL OR j.nextRun < :now"),
  *     @ORM\NamedQuery(name="jobs.all",query="SELECT j FROM __CLASS__ j")
@@ -26,8 +27,9 @@ class Job {
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @\CCronBundle\Validator\Constraints\Cron
      */
-    protected $cronschedule;
+    protected $cronSchedule;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -60,6 +62,11 @@ class Job {
     protected $command;
 
     /**
+     * @ORM\OneToMany(targetEntity="JobRun",mappedBy="job",cascade={"remove"},fetch="LAZY")
+     */
+    protected $runs;
+
+    /**
      * @return int
      */
     public function getId() {
@@ -83,15 +90,15 @@ class Job {
     /**
      * @return string
      */
-    public function getCronschedule() {
-        return $this->cronschedule;
+    public function getCronSchedule() {
+        return $this->cronSchedule;
     }
 
     /**
-     * @param string $cronschedule
+     * @param string $cronSchedule
      */
-    public function setCronschedule($cronschedule) {
-        $this->cronschedule = $cronschedule;
+    public function setCronSchedule($cronSchedule) {
+        $this->cronSchedule = $cronSchedule;
     }
 
     /**
@@ -129,15 +136,17 @@ class Job {
         return $this->lastRunTime;
     }
 
-    public function getLastRunTimeInterval() {
-        return new \DateInterval('PT' . $this->lastRunTime . 'S');
-    }
-
     /**
      * @param int $lastRunTime
      */
     public function setLastRunTime($lastRunTime) {
         $this->lastRunTime = $lastRunTime;
+    }
+
+    public function getLastRunTimeInterval() {
+        if ($this->lastRunTime > 0) {
+            return new \DateInterval('PT' . $this->lastRunTime . 'S');
+        }
     }
 
     /**
@@ -166,5 +175,19 @@ class Job {
      */
     public function setCommand($command) {
         $this->command = $command;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRuns() {
+        return $this->runs;
+    }
+
+    /**
+     * @param mixed $runs
+     */
+    public function setRuns($runs) {
+        $this->runs = $runs;
     }
 }

@@ -28,6 +28,4 @@ interface Job {
     public function getName();
 
     public function fillInLog(JobRun $log);
-
-    public function preExecute(ContainerInterface $container);
 }

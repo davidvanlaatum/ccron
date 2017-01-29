@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="runs")
  * @ORM\NamedQueries(value = {
  *     @ORM\NamedQuery(name="findForJob",query="SELECT j FROM __CLASS__ j WHERE j.job = :job"),
+ *     @ORM\NamedQuery(name="recent.builds",query="SELECT j FROM __CLASS__ j ORDER BY j.time DESC"),
  * })
  */
 class JobRun {
@@ -20,7 +21,7 @@ class JobRun {
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Job")
+     * @ORM\ManyToOne(targetEntity="Job",inversedBy="runs")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $job;
@@ -32,10 +33,21 @@ class JobRun {
     protected $time;
 
     /**
-     * @ORM\Column(type="text")
-     * @var string
+     * @ORM\OneToOne(targetEntity="JobRunOutput", inversedBy="run", cascade={"persist","remove"}, fetch = "EXTRA_LAZY")
      */
     protected $output;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @var int
+     */
+    protected $runTime;
+
+    /**
+     * @ORM\Column(type="string", length=64)
+     * @var string
+     */
+    protected $host;
 
     /**
      * @return mixed
@@ -73,16 +85,48 @@ class JobRun {
     }
 
     /**
-     * @return string
+     * @return JobRunOutput
      */
     public function getOutput() {
         return $this->output;
     }
 
     /**
-     * @param string $output
+     * @param JobRunOutput $output
      */
-    public function setOutput($output) {
+    public function setOutput(JobRunOutput $output) {
         $this->output = $output;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRunTime() {
+        return $this->runTime;
+    }
+
+    /**
+     * @param int $runTime
+     */
+    public function setRunTime($runTime) {
+        $this->runTime = $runTime;
+    }
+
+    public function getRunTimeInterval() {
+        return new \DateInterval('PT' . $this->runTime . 'S');
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost() {
+        return $this->host;
+    }
+
+    /**
+     * @param string $host
+     */
+    public function setHost($host) {
+        $this->host = $host;
     }
 }

@@ -3,6 +3,7 @@ namespace CCronBundle\Cron\Jobs;
 
 use CCronBundle\Entity\Job as JobEntity;
 use CCronBundle\Entity\JobRun;
+use CCronBundle\Entity\JobRunOutput;
 use Symfony\Component\Process\ProcessBuilder;
 
 class Command extends AbstractJob {
@@ -41,6 +42,10 @@ class Command extends AbstractJob {
     }
 
     public function fillInLog(JobRun $log) {
-        $log->setOutput($this->output);
+        $output = new JobRunOutput();
+        $output->setOutput($this->output);
+        $output->setRun($log);
+        $log->setRunTime(0);
+        $log->setOutput($output);
     }
 }

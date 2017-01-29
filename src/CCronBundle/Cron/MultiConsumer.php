@@ -3,14 +3,23 @@ namespace CCronBundle\Cron;
 
 use OldSound\RabbitMqBundle\RabbitMq\BaseConsumer;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 class MultiConsumer extends BaseConsumer {
-    use ContainerAwareTrait;
     /** @var BaseConsumer[] */
     protected $subConsumers = [];
     protected $consumerIndex = 1;
     protected $setupForConsume = false;
+    /** @var HostnameDeterminer */
+    protected $hostnameDeterminer;
+
+    /**
+     * @param HostnameDeterminer $hostnameDeterminer
+     */
+    public function setHostnameDeterminer($hostnameDeterminer) {
+        $this->hostnameDeterminer = $hostnameDeterminer;
+    }
 
     public function addSubQueue(BaseConsumer $consumer) {
         if (!in_array($consumer, $this->subConsumers)) {
@@ -22,15 +31,13 @@ class MultiConsumer extends BaseConsumer {
     }
 
     protected function startConsumingOn(BaseConsumer $consumer) {
-        if(!$this->container) {
-            throw new \Exception("No container");
-        }
-        $this->container->get("logger")->debug("Now consuming on " . get_class($consumer), [$consumer->queueOptions]);
+        $this->logger->debug("Now consuming on " . get_class($consumer), [$consumer->queueOptions]);
         if ($consumer->ch != null && $consumer->ch != $this->getChannel()) {
             $consumer->ch->close();
         }
         $consumer->setChannel($this->getChannel());
-        $consumer->setConsumerTag(sprintf("%s-%d-%d", $this->container->get("hostname_determiner")->get(), self::myPid(), $this->consumerIndex++));
+        $consumer->setConsumerTag(sprintf("%s-%d-%d", $this->hostnameDeterminer->get(), self::myPid(), $this->consumerIndex++));
+        $this->getChannel()->basic_qos(null, 1, false);
         $consumer->setupConsumer();
     }
 
@@ -55,10 +62,7 @@ class MultiConsumer extends BaseConsumer {
     }
 
     protected function stopConsumingOn(BaseConsumer $consumer) {
-        if(!$this->container) {
-            throw new \Exception("No container");
-        }
-        $this->container->get("logger")->debug("No longer consuming on " . get_class($consumer), [$consumer->queueOptions]);
+        $this->logger->debug("No longer consuming on " . get_class($consumer), [$consumer->queueOptions]);
         $consumer->stopConsuming();
     }
 
@@ -66,12 +70,11 @@ class MultiConsumer extends BaseConsumer {
         if (!$this->setupForConsume) {
             $this->startConsuming();
         }
-        $this->getChannel()->basic_qos(null, 10, true);
         if (count($this->getChannel()->callbacks)) {
             $this->maybeStopConsumer();
             if (!$this->forceStop) {
                 try {
-                    $this->getChannel()->wait(null, false, $this->getIdleTimeout());
+                    $this->getChannel()->wait(null, false, 1);
                 } catch (AMQPTimeoutException $e) {
                     if (null !== $this->getIdleTimeoutExitCode()) {
                         return $this->getIdleTimeoutExitCode();

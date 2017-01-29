@@ -19,6 +19,13 @@ abstract class AbstractJob implements Job {
         return $class::build($job);
     }
 
+    public static function fillJob(Job $command, JobEntity $job) {
+        if ($command instanceof AbstractJob) {
+            $command->setId($job->getId());
+            $command->setName($job->getName());
+        }
+    }
+
     /**
      * @return int
      */
@@ -45,16 +52,5 @@ abstract class AbstractJob implements Job {
      */
     public function setName($name) {
         $this->name = $name;
-    }
-
-    public static function fillJob(Job $command, JobEntity $job) {
-        if ($command instanceof AbstractJob) {
-            $command->setId($job->getId());
-            $command->setName($job->getName());
-        }
-    }
-
-    public function preExecute(ContainerInterface $container) {
-        return true;
     }
 }
