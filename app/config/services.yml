@@ -95,8 +95,8 @@ services:
       - [setQueueOptions, [{name: 'cron'}]]
       - [setQosOptions, ['0', '%workers%', 'false']]
 
-    app.form.type.cron:
-        class: CCronBundle\Form\CronType
-        lazy: true
-        tags:
-            - { name: form.type }
+  app.form.type.cron:
+    class: CCronBundle\Form\CronType
+    lazy: true
+    tags:
+      - { name: form.type }
