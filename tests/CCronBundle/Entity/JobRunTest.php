@@ -27,7 +27,7 @@ class JobRunTest extends KernelTestCase {
         $this->em->persist($job);
         $output = new JobRunOutput();
         $data = [
-            'time' => new \DateTime(),
+            'time' => new \DateTime('2010-01-01'),
             'runTime' => 1,
             'host' => 'Host',
             'job' => $job,
