@@ -76,6 +76,13 @@ class CurrentState {
     }
 
     /**
+     * @return float
+     */
+    public function getUptime() {
+        return $this->uptime;
+    }
+
+    /**
      * @param float $uptime
      */
     public function setUptime($uptime) {
@@ -85,8 +92,8 @@ class CurrentState {
     /**
      * @return float
      */
-    public function getUptime() {
-        return $this->uptime;
+    public function getMasterUptime() {
+        return $this->masterUptime;
     }
 
     /**
@@ -97,10 +104,11 @@ class CurrentState {
     }
 
     /**
-     * @return float
+     * Get id
+     *
+     * @return integer
      */
-    public function getMasterUptime() {
-        return $this->masterUptime;
+    public function getId() {
+        return $this->id;
     }
-
 }

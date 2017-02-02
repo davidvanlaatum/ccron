@@ -45,6 +45,8 @@ services:
   master:
     class: CCronBundle\Cron\Master
     lazy: true
+    arguments:
+      - '@clock'
     calls:
       - [setEntityManager, ['@doctrine.orm.default_entity_manager']]
       - [setFailoverTracker, ['@failover_tracker']]
@@ -52,12 +54,25 @@ services:
       - [setKeepaliveConsumer, ['@old_sound_rabbit_mq.keepalive_consumer']]
       - [setMasterConsumer, ['@multi.consumer']]
       - [setLogger, ['@logger']]
-      - [setCronProducer, ['@old_sound_rabbit_mq.cron_producer']]
       - [setHostnameDeterminer, ['@hostname_determiner']]
       - [setRunning, ['@running']]
+      - [setJobQueuer, ['@jobQueuer']]
+  jobQueuer:
+    class: CCronBundle\Cron\JobQueuer
+    lazy: true
+    arguments:
+      - '@clock'
+    calls:
+      - [setCronProducer, ['@old_sound_rabbit_mq.cron_producer']]
+      - [setLogger, ['@logger']]
+  clock:
+    class: CCronBundle\SystemClock
+    lazy: true
   failover_tracker:
     class: CCronBundle\Cron\FailoverTracker
     lazy: true
+    arguments:
+      - '@clock'
     calls:
       - [setContainer, ['@service_container']]
       - [setKeepaliveTime, ['%keepalive.time%']]

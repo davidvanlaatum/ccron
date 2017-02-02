@@ -1,6 +1,7 @@
 <?php
 namespace CCronBundle\Cron;
 
+use CCronBundle\Clock;
 use CCronBundle\Events\AbstractEvent;
 use CCronBundle\Events\Control\ControlEvent;
 use CCronBundle\Events\Event;
@@ -16,6 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 class FailoverTracker implements ContainerAwareInterface, ConsumerInterface {
     use ContainerAwareTrait;
+    /** @var Clock */
+    protected $clock;
     protected $master;
     protected $masterSince;
     protected $upSince;
@@ -31,7 +34,7 @@ class FailoverTracker implements ContainerAwareInterface, ConsumerInterface {
     /**
      * FailoverTracker constructor.
      */
-    public function __construct() {
+    public function __construct(Clock $clock) {
         $this->upSince = $this->lastKeepalive = gettimeofday(true);
     }
 

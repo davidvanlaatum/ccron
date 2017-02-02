@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\EntityListeners({"CCronBundle\EventListener\JobPersistListener"})
  * @ORM\Table(name="jobs",uniqueConstraints={@ORM\UniqueConstraint(name="job_name", columns={"name"})})
+ * @ORM\Entity(repositoryClass="CCronBundle\Repository\JobRepository")
  * @ORM\NamedQueries(value = {
  *     @ORM\NamedQuery(name="poll.work",query="SELECT j FROM __CLASS__ j WHERE j.nextRun IS NULL OR j.nextRun < :now"),
  *     @ORM\NamedQuery(name="jobs.all",query="SELECT j FROM __CLASS__ j")
@@ -65,6 +66,13 @@ class Job {
      * @ORM\OneToMany(targetEntity="JobRun",mappedBy="job",cascade={"remove"},fetch="LAZY")
      */
     protected $runs;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->runs = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @return int

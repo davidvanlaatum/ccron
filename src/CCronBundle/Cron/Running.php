@@ -1,23 +1,20 @@
 <?php
 namespace CCronBundle\Cron;
 
-use Symfony\Bridge\Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class Running {
     protected $running = true;
     protected $memory_limit;
-    /** @var Logger */
+    /** @var LoggerInterface */
     protected $logger;
 
-    /**
-     * Running constructor.
-     */
-    public function __construct(Logger $logger) {
+    public function __construct(LoggerInterface $logger) {
         $this->memory_limit = $this->returnBytes(ini_get('memory_limit'));
         $this->logger = $logger;
     }
 
-    function returnBytes($val) {
+    public function returnBytes($val) {
         $val = trim($val);
         $last = strtolower($val[strlen($val) - 1]);
         switch ($last) {
@@ -33,13 +30,16 @@ class Running {
 
     public function isRunning() {
         if ($this->running && memory_get_usage() > $this->memory_limit * 0.85) {
-            $this->running = false;
-            $this->logger->warn("Hit memory limit shutting down");
+            $this->logger->warning("Hit memory limit shutting down");
+            $this->shutdown();
         }
         return $this->running;
     }
 
     public function shutdown() {
+        if (!$this->running) {
+            $this->logger->warning("Calling shutdown", debug_backtrace(0, 1));
+        }
         $this->running = false;
     }
 }
