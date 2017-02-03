@@ -2,7 +2,6 @@
 
 namespace Tests\CCronBundle\Cron;
 
-
 use CCronBundle\Cron\FailoverTracker;
 use CCronBundle\Cron\HostnameDeterminer;
 use CCronBundle\Cron\JobQueuer;
@@ -17,8 +16,29 @@ use Doctrine\ORM\EntityManager;
 use OldSound\RabbitMqBundle\RabbitMq\Consumer;
 use Psr\Log\LoggerInterface;
 
-
 class MasterTest extends \PHPUnit_Framework_TestCase {
+    /** @var FailoverTracker|\PHPUnit_Framework_MockObject_MockObject */
+    protected $failoverTracker;
+    /** @var Consumer|\PHPUnit_Framework_MockObject_MockObject */
+    protected $keepAliveConsumer;
+    /** @var Consumer|\PHPUnit_Framework_MockObject_MockObject */
+    protected $rpcServer;
+    /** @var Master */
+    protected $master;
+    /** @var MockClock */
+    protected $clock;
+    /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject */
+    protected $em;
+    /** @var Running|\PHPUnit_Framework_MockObject_MockObject */
+    protected $running;
+    /** @var HostnameDeterminer */
+    protected $hostnameDeterminer;
+    /** @var MultiConsumer|\PHPUnit_Framework_MockObject_MockObject */
+    protected $masterConsumer;
+    /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    protected $logger;
+    /** @var JobQueuer|\PHPUnit_Framework_MockObject_MockObject */
+    protected $jobQueuer;
 
     /**
      * @covers \CCronBundle\Cron\Master::checkForWork
@@ -27,40 +47,57 @@ class MasterTest extends \PHPUnit_Framework_TestCase {
      * @covers \CCronBundle\Cron\Master::setLogger
      */
     public function testCheckForWork() {
-        $clock = new MockClock();
+        $this->createMaster();
         $job = new Job();
         $job->setCronSchedule('@daily');
-        $job->setNextRun($clock->getCurrentDateTime());
+        $job->setNextRun($this->clock->getCurrentDateTime());
         $nextTime = new \DateTime('1970-01-02');
 
         /** @var JobRepository|\PHPUnit_Framework_MockObject_MockObject $repo */
         $repo = $this->createMock(JobRepository::class);
         $repo->expects($this->exactly(2))->method('getWork')->willReturnOnConsecutiveCalls([$job], []);
-
-        /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject $em */
-        $em = $this->createMock(EntityManager::class);
-        $em->expects($this->exactly(2))->method("transactional")->willReturnCallback(function ($function) use ($em) {
-            return $function($em);
-        });
-        $em->expects($this->any())->method('getRepository')->with(Job::class)->willReturn($repo);
-
-        /** @var JobQueuer|\PHPUnit_Framework_MockObject_MockObject $jobQueuer */
-        $jobQueuer = $this->createMock(JobQueuer::class);
-        $jobQueuer->expects($this->once())->method('runJob')->with($job, $nextTime);
-
-        $em->expects($this->once())->method('persist')->with($job);
-
-        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
-        $logger = $this->createMock(LoggerInterface::class);
-
-        $master = new Master($clock);
-        $master->setEntityManager($em);
-        $master->setJobQueuer($jobQueuer);
-        $master->setLogger($logger);
-        $master->checkForWork();
-
+        $this->em->expects($this->any())->method('getRepository')->with(Job::class)->willReturn($repo);
+        $this->em->expects($this->once())->method('persist')->with($job);
+        $this->jobQueuer->expects($this->once())->method('runJob')->with($job, $nextTime);
+        $this->master->checkForWork();
         $this->assertEquals($nextTime, $job->getNextRun());
-        $master->checkForWork();
+        $this->master->checkForWork();
+    }
+
+    protected function createMaster() {
+        $this->clock = new MockClock();
+        $this->master = new Master($this->clock);
+        $this->keepAliveConsumer = $this->createMock(Consumer::class);
+        $this->rpcServer = $this->createMock(Consumer::class);
+
+        $this->masterConsumer = $this->createMock(MultiConsumer::class);
+
+        $this->failoverTracker = $this->createMock(FailoverTracker::class);
+        $this->failoverTracker->method('getUptime')->willReturn(10);
+        $this->failoverTracker->method('getMasterUptime')->willReturn(1);
+
+        $this->em = $this->createMock(EntityManager::class);
+        $this->em->method("transactional")->willReturnCallback(function ($function) {
+            return $function($this->em);
+        });
+
+        $this->jobQueuer = $this->createMock(JobQueuer::class);
+
+        $this->running = $this->createMock(Running::class);
+        $this->running->method('isRunning')->willReturnOnConsecutiveCalls(true, true, false);
+        $this->logger = $this->createMock(LoggerInterface::class);
+        $this->master->setMasterConsumer($this->masterConsumer);
+        $this->master->setKeepaliveConsumer($this->keepAliveConsumer);
+        $this->master->setRunning($this->running);
+        $this->master->setFailoverTracker($this->failoverTracker);
+        $this->master->setRPCServer($this->rpcServer);
+        $this->master->setEntityManager($this->em);
+        $this->hostnameDeterminer = new HostnameDeterminer();
+        $this->hostnameDeterminer->set("TestHost");
+        $this->master->setHostnameDeterminer($this->hostnameDeterminer);
+        $this->master->setLogger($this->logger);
+        $this->master->setJobQueuer($this->jobQueuer);
+
     }
 
     /**
@@ -70,34 +107,16 @@ class MasterTest extends \PHPUnit_Framework_TestCase {
      * @covers \CCronBundle\Cron\Master::setFailoverTracker
      */
     public function testScheduleWork() {
-        $clock = new MockClock();
-        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
-        $logger = $this->createMock(LoggerInterface::class);
+        $this->createMaster();
 
         /** @var JobRepository|\PHPUnit_Framework_MockObject_MockObject $repo */
         $repo = $this->createMock(JobRepository::class);
 
-        /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject $em */
-        $em = $this->createMock(EntityManager::class);
-        $em->expects($this->exactly(2))->method("transactional")->willReturnCallback(function ($function) use ($em) {
-            return $function($em);
-        });
-
-        /** @var FailoverTracker|\PHPUnit_Framework_MockObject_MockObject $failoverTracker */
-        $failoverTracker = $this->createMock(FailoverTracker::class);
-        $failoverTracker->method('getUptime')->willReturn(10);
-        $failoverTracker->method('getMasterUptime')->willReturn(1);
-
-        $master = new Master($clock);
-        $master->setLogger($logger);
-        $master->setEntityManager($em);
-        $master->setHostnameDeterminer(new HostnameDeterminer());
-        $master->setFailoverTracker($failoverTracker);
-        $master->scheduleWork();
-        $clock->setCurrentTime(10);
-        $em->expects($this->any())->method('getRepository')->with(Job::class)->willReturn($repo);
+        $this->master->scheduleWork();
+        $this->clock->setCurrentTime(10);
+        $this->em->expects($this->any())->method('getRepository')->with(Job::class)->willReturn($repo);
         $repo->expects($this->once())->method('getWork')->willReturn([]);
-        $master->scheduleWork();
+        $this->master->scheduleWork();
     }
 
     /**
@@ -108,92 +127,37 @@ class MasterTest extends \PHPUnit_Framework_TestCase {
      * @covers \CCronBundle\Cron\Master::setRunning
      */
     public function testRunNotMaster() {
-        $clock = new MockClock();
-        $master = new Master($clock);
-        $this->createMaster($master, false);
-        $master->run();
-    }
-
-    protected function createMaster(Master $master, $isMaster) {
-        /** @var Consumer|\PHPUnit_Framework_MockObject_MockObject $keepAliveConsumer */
-        $keepAliveConsumer = $this->createMock(Consumer::class);
-
-        /** @var Consumer|\PHPUnit_Framework_MockObject_MockObject $rpcServer */
-        $rpcServer = $this->createMock(Consumer::class);
-
-        /** @var MultiConsumer|\PHPUnit_Framework_MockObject_MockObject $masterConsumer */
-        $masterConsumer = $this->createMock(MultiConsumer::class);
-        if ($isMaster) {
-            $masterConsumer->expects($this->exactly(3))->method('addSubQueue')->withConsecutive($keepAliveConsumer, $rpcServer, $rpcServer);
-        } else {
-            $masterConsumer->expects($this->once())->method('addSubQueue')->with($keepAliveConsumer);
-            $masterConsumer->expects($this->exactly(2))->method('removeSubQueue')->with($rpcServer);
-        }
-
-        /** @var FailoverTracker|\PHPUnit_Framework_MockObject_MockObject $failoverTracker */
-        $failoverTracker = $this->createMock(FailoverTracker::class);
-        $failoverTracker->method('getUptime')->willReturn(10);
-        $failoverTracker->method('getMasterUptime')->willReturn(1);
-        $failoverTracker->method('isMaster')->willReturn($isMaster);
-
-        /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject $em */
-        $em = $this->createMock(EntityManager::class);
-        $em->expects($this->atLeastOnce())->method('clear');
-
-        /** @var Running|\PHPUnit_Framework_MockObject_MockObject $running */
-        $running = $this->createMock(Running::class);
-        $running->expects($this->exactly(3))->method('isRunning')->willReturnOnConsecutiveCalls(true, true, false);
-
-        $master->setMasterConsumer($masterConsumer);
-        $master->setKeepaliveConsumer($keepAliveConsumer);
-        $master->setRunning($running);
-        $master->setFailoverTracker($failoverTracker);
-        $master->setRPCServer($rpcServer);
-        $master->setEntityManager($em);
+        $this->createMaster();
+        $this->em->expects($this->atLeastOnce())->method('clear');
+        $this->masterConsumer->expects($this->once())->method('addSubQueue')->with($this->keepAliveConsumer);
+        $this->masterConsumer->expects($this->exactly(2))->method('removeSubQueue')->with($this->rpcServer);
+        $this->master->run();
     }
 
     /**
      * @covers \CCronBundle\Cron\Master::run
      */
     public function testRunMaster() {
-        $clock = new MockClock();
-        $master = new Master($clock);
-        $this->createMaster($master, true);
-        $master->run();
+        $this->createMaster();
+        $this->em->expects($this->atLeastOnce())->method('clear');
+        $this->masterConsumer->expects($this->exactly(3))->method('addSubQueue')->withConsecutive($this->keepAliveConsumer, $this->rpcServer, $this->rpcServer);
+        $this->failoverTracker->method('isMaster')->willReturn(true);
+        $this->master->run();
     }
 
     /**
      * @covers \CCronBundle\Cron\Master::updateStats
      */
     public function testUpdateStats() {
-        $clock = new MockClock();
-        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
-        $logger = $this->createMock(LoggerInterface::class);
-
-        /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject $em */
-        $em = $this->createMock(EntityManager::class);
-        $em->method("transactional")->willReturnCallback(function ($function) use ($em) {
-            return $function($em);
-        });
-        $em->expects($this->once())->method('persist')->with($this->callback(function (CurrentState $state) use ($clock) {
+        $this->createMaster();
+        $this->em->expects($this->once())->method('persist')->with($this->callback(function (CurrentState $state) {
             $this->assertEquals(1, $state->getId());
             $this->assertEquals(1, $state->getMasterUptime());
             $this->assertEquals(10, $state->getUptime());
-            $this->assertEquals($clock->getCurrentDateTime(), $state->getLastUpdated());
+            $this->assertEquals($this->clock->getCurrentDateTime(), $state->getLastUpdated());
             return true;
         }));
-
-        /** @var FailoverTracker|\PHPUnit_Framework_MockObject_MockObject $failoverTracker */
-        $failoverTracker = $this->createMock(FailoverTracker::class);
-        $failoverTracker->method('getUptime')->willReturn(10);
-        $failoverTracker->method('getMasterUptime')->willReturn(1);
-        $failoverTracker->method('isMaster')->willReturn(true);
-
-        $master = new Master($clock);
-        $master->setFailoverTracker($failoverTracker);
-        $master->setEntityManager($em);
-        $master->setLogger($logger);
-        $master->setHostnameDeterminer(new HostnameDeterminer());
-        $master->updateStats();
+        $this->failoverTracker->method('isMaster')->willReturn(true);
+        $this->master->updateStats();
     }
 }
