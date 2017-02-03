@@ -109,7 +109,12 @@ class MasterTest extends \PHPUnit_Framework_TestCase {
      */
     public function testRunNotMaster() {
         $clock = new MockClock();
+        $master = new Master($clock);
+        $this->createMaster($master, false);
+        $master->run();
+    }
 
+    protected function createMaster(Master $master, $isMaster) {
         /** @var Consumer|\PHPUnit_Framework_MockObject_MockObject $keepAliveConsumer */
         $keepAliveConsumer = $this->createMock(Consumer::class);
 
@@ -118,13 +123,18 @@ class MasterTest extends \PHPUnit_Framework_TestCase {
 
         /** @var MultiConsumer|\PHPUnit_Framework_MockObject_MockObject $masterConsumer */
         $masterConsumer = $this->createMock(MultiConsumer::class);
-        $masterConsumer->expects($this->once())->method('addSubQueue')->with($keepAliveConsumer);
-        $masterConsumer->expects($this->exactly(2))->method('removeSubQueue')->with($rpcServer);
+        if ($isMaster) {
+            $masterConsumer->expects($this->exactly(3))->method('addSubQueue')->withConsecutive($keepAliveConsumer, $rpcServer, $rpcServer);
+        } else {
+            $masterConsumer->expects($this->once())->method('addSubQueue')->with($keepAliveConsumer);
+            $masterConsumer->expects($this->exactly(2))->method('removeSubQueue')->with($rpcServer);
+        }
 
         /** @var FailoverTracker|\PHPUnit_Framework_MockObject_MockObject $failoverTracker */
         $failoverTracker = $this->createMock(FailoverTracker::class);
         $failoverTracker->method('getUptime')->willReturn(10);
         $failoverTracker->method('getMasterUptime')->willReturn(1);
+        $failoverTracker->method('isMaster')->willReturn($isMaster);
 
         /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject $em */
         $em = $this->createMock(EntityManager::class);
@@ -134,14 +144,12 @@ class MasterTest extends \PHPUnit_Framework_TestCase {
         $running = $this->createMock(Running::class);
         $running->expects($this->exactly(3))->method('isRunning')->willReturnOnConsecutiveCalls(true, true, false);
 
-        $master = new Master($clock);
         $master->setMasterConsumer($masterConsumer);
         $master->setKeepaliveConsumer($keepAliveConsumer);
         $master->setRunning($running);
         $master->setFailoverTracker($failoverTracker);
         $master->setRPCServer($rpcServer);
         $master->setEntityManager($em);
-        $master->run();
     }
 
     /**
@@ -149,38 +157,8 @@ class MasterTest extends \PHPUnit_Framework_TestCase {
      */
     public function testRunMaster() {
         $clock = new MockClock();
-
-        /** @var Consumer|\PHPUnit_Framework_MockObject_MockObject $keepAliveConsumer */
-        $keepAliveConsumer = $this->createMock(Consumer::class);
-
-        /** @var Consumer|\PHPUnit_Framework_MockObject_MockObject $rpcServer */
-        $rpcServer = $this->createMock(Consumer::class);
-
-        /** @var MultiConsumer|\PHPUnit_Framework_MockObject_MockObject $masterConsumer */
-        $masterConsumer = $this->createMock(MultiConsumer::class);
-        $masterConsumer->expects($this->exactly(3))->method('addSubQueue')->withConsecutive($keepAliveConsumer, $rpcServer, $rpcServer);
-
-        /** @var FailoverTracker|\PHPUnit_Framework_MockObject_MockObject $failoverTracker */
-        $failoverTracker = $this->createMock(FailoverTracker::class);
-        $failoverTracker->method('getUptime')->willReturn(10);
-        $failoverTracker->method('getMasterUptime')->willReturn(1);
-        $failoverTracker->method('isMaster')->willReturn(true);
-
-        /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject $em */
-        $em = $this->createMock(EntityManager::class);
-        $em->expects($this->atLeastOnce())->method('clear');
-
-        /** @var Running|\PHPUnit_Framework_MockObject_MockObject $running */
-        $running = $this->createMock(Running::class);
-        $running->expects($this->exactly(3))->method('isRunning')->willReturnOnConsecutiveCalls(true, true, false);
-
         $master = new Master($clock);
-        $master->setMasterConsumer($masterConsumer);
-        $master->setKeepaliveConsumer($keepAliveConsumer);
-        $master->setRunning($running);
-        $master->setFailoverTracker($failoverTracker);
-        $master->setRPCServer($rpcServer);
-        $master->setEntityManager($em);
+        $this->createMaster($master, true);
         $master->run();
     }
 
