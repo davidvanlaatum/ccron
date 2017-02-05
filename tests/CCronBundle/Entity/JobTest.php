@@ -4,6 +4,7 @@ namespace Tests\CCronBundle\Entity;
 
 use CCronBundle\Entity\Job;
 use CCronBundle\Entity\JobRun;
+use CCronBundle\Entity\JobRunOutput;
 use Tests\CCronBundle\ContainerAwareTestCase;
 use Tests\CCronBundle\DBAwareTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -74,6 +75,7 @@ class JobTest extends KernelTestCase {
         $run->setTime(new \DateTime());
         $run->setRunTime(0);
         $run->setHost("Host");
+        $run->setOutput(new JobRunOutput());
         $this->em->persist($run);
         $this->em->flush();
         $this->em->clear();

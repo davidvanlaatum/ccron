@@ -7,6 +7,11 @@ use Doctrine\DBAL\LockMode;
 
 class JobRepository extends \Doctrine\ORM\EntityRepository {
     /**
+     * @function findAll
+     * @return Job[]
+     */
+
+    /**
      * @param \DateTime $now
      * @return Job[]
      */

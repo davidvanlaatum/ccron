@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DefaultController extends Controller {
     /**
@@ -18,12 +19,8 @@ class DefaultController extends Controller {
     public function indexAction() {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
-        $query = $em->getRepository(Job::class)->createNamedQuery("jobs.all");
-        /** @var Job[] $jobs */
-        $jobs = $query->execute();
-        $query = $em->getRepository(JobRun::class)->createNamedQuery("recent.builds");
-        $query->setMaxResults(25);
-        $builds = $query->execute();
+        $jobs = $em->getRepository(Job::class)->findAll();
+        $builds = $em->getRepository(JobRun::class)->getRecent();
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.root_dir') . '/..') . DIRECTORY_SEPARATOR,
             'jobs' => $jobs,
@@ -33,14 +30,12 @@ class DefaultController extends Controller {
 
     /**
      * @Route("/recentbuilds", name="recentbuilds")
+     * @return Response
      */
     public function recentBuilds() {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
-        $query = $em->getRepository(JobRun::class)->createNamedQuery("recent.builds");
-        $query->setMaxResults(25);
-        $builds = $query->execute();
-
+        $builds = $em->getRepository(JobRun::class)->getRecent();
         return $this->render('default/recentbuilds.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.root_dir') . '/..') . DIRECTORY_SEPARATOR,
             'builds' => $builds
@@ -49,6 +44,9 @@ class DefaultController extends Controller {
 
     /**
      * @Route("/job/{id}/edit", name="editjob")
+     * @param Request $request
+     * @param int $id
+     * @return Response
      */
     public function editJob(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
@@ -76,9 +74,12 @@ class DefaultController extends Controller {
 
     /**
      * @Route("/job/add", name="addjob")
+     * @param Request $request
+     * @return Response
      */
     public function addJob(Request $request) {
         $form = $this->createForm(JobForm::class, new Job());
+        $form->remove('delete');
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $job = $form->getData();
@@ -101,9 +102,8 @@ class DefaultController extends Controller {
     public function viewBuilds($id) {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
-        $query = $em->getRepository(JobRun::class)->createNamedQuery("findForJob");
         $job = $em->find(Job::class, $id);
-        $builds = $query->execute(["job" => $job]);
+        $builds = $em->getRepository(JobRun::class)->forJob($job);
         return $this->render('default/builds.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.root_dir') . '/..') . DIRECTORY_SEPARATOR,
             'builds' => $builds,
@@ -116,10 +116,19 @@ class DefaultController extends Controller {
      * @param $id
      * @return Response
      */
-    public function viewConsole($id) {
+    public function viewConsole($job, $id) {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $run = $em->find(JobRun::class, $id);
-        return new Response($run->getOutput()->getOutput(), 200, ["Content-Type" => "text/plain"]);
+        if (!$run) {
+            throw new NotFoundHttpException();
+        } else if ($run->getJob()->getId() != $job) {
+            throw new NotFoundHttpException();
+        }
+        $response = new Response($run->getOutput()->getOutput(), 200, ['Content-Type' => 'text/plain']);
+        $response->setLastModified($run->getTime());
+        $response->setClientTtl(3600);
+        $response->setTtl(3600);
+        return $response;
     }
 }

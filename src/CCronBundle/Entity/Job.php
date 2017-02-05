@@ -1,7 +1,9 @@
 <?php
 namespace CCronBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -22,6 +24,7 @@ class Job {
     protected $id;
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank
      * @var string
      */
     protected $name;
@@ -58,6 +61,7 @@ class Job {
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank
      * @var string
      */
     protected $command;
@@ -71,7 +75,7 @@ class Job {
      * Constructor
      */
     public function __construct() {
-        $this->runs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->runs = new ArrayCollection();
     }
 
     /**

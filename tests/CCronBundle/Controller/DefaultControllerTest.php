@@ -4,6 +4,7 @@ namespace Tests\AppBundle\Controller;
 
 use CCronBundle\Entity\Job;
 use CCronBundle\Entity\JobRun;
+use CCronBundle\Entity\JobRunOutput;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\CCronBundle\ContainerAwareTestCase;
@@ -38,9 +39,10 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
+     * @param int $buildCount
      * @return array
      */
-    protected function generateJobData() {
+    protected function generateJobData($buildCount = 1) {
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $job1 = new Job();
         $job1->setName("A Test Job");
@@ -57,12 +59,19 @@ class DefaultControllerTest extends WebTestCase {
         $em->persist($job2);
 
         $builds = [];
-        $builds[0] = new JobRun();
-        $builds[0]->setJob($job1);
-        $builds[0]->setTime($job1->getLastRun());
-        $builds[0]->setRunTime($job1->getLastRunTime());
-        $builds[0]->setHost('Host');
-        $em->persist($builds[0]);
+        for ($i = 0; $i < $buildCount; $i++) {
+            $jobRunOutput = new JobRunOutput();
+            $jobRunOutput->setOutput('Hi all');
+            $em->persist($jobRunOutput);
+
+            $builds[$i] = new JobRun();
+            $builds[$i]->setJob($job1);
+            $builds[$i]->setTime($job1->getLastRun());
+            $builds[$i]->setRunTime($job1->getLastRunTime());
+            $builds[$i]->setHost('Host');
+            $builds[$i]->setOutput($jobRunOutput);
+            $em->persist($builds[$i]);
+        }
 
         $em->flush();
         return [$job1, $job2, $builds];
@@ -99,4 +108,121 @@ class DefaultControllerTest extends WebTestCase {
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertRecentBuilds($builds, $crawler);
     }
+
+    /**
+     * @covers \CCronBundle\Controller\DefaultController::viewConsole
+     */
+    public function testConsole() {
+        $client = static::createClient();
+        /**
+         * @var JobRun[] $builds
+         * @var Job $job1
+         * @var Job $job2
+         */
+        list($job1, $job2, $builds) = $this->generateJobData();
+        $crawler = $client->request('GET', sprintf('/job/%d/console/%s', $job1->getId(), $builds[0]->getId()));
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertTrue($client->getResponse()->isCacheable(), 'Response is not cacheable');
+        $this->assertEquals('Hi all', $client->getResponse()->getContent());
+        $this->assertEquals('text/plain; charset=UTF-8', $client->getResponse()->headers->get('Content-Type'));
+
+        $client->request('GET', sprintf('/job/%d/console/%s', $job2->getId(), $builds[0]->getId()));
+        $this->assertTrue($client->getResponse()->isNotFound());
+
+        $client->request('GET', sprintf('/job/%d/console/%s', $job2->getId(), 0));
+        $this->assertTrue($client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @covers \CCronBundle\Controller\DefaultController::addJob
+     */
+    public function testAddJob() {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/job/add');
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertEquals(0, $crawler->selectButton('Delete')->count());
+        $form = $crawler->selectButton('job_form[save]')->form([
+            'job_form[name]' => 'Hi all',
+            'job_form[cronSchedule]' => '@daily',
+            'job_form[command]' => 'echo hi all'
+        ]);
+        $client->submit($form);
+        $this->assertTrue($client->getResponse()->isRedirect('/'));
+
+        /** @var Job $job */
+        $job = $client->getContainer()->get('doctrine.orm.default_entity_manager')->createQuery("SELECT j FROM " . Job::class . " j WHERE j.name = 'Hi all'")
+            ->getSingleResult();
+        $this->assertNotNull($job);
+        $this->assertEquals('Hi all', $job->getName());
+        $this->assertEquals('@daily', $job->getCronSchedule());
+        $this->assertEquals('echo hi all', $job->getCommand());
+    }
+
+    /**
+     * @covers \CCronBundle\Controller\DefaultController::editJob
+     */
+    public function testEditJob() {
+        $client = static::createClient();
+        $job = new Job();
+        $job->setName('Hi all');
+        $job->setCronSchedule('@daily');
+        $job->setCommand('echo hi all');
+        $em = $client->getContainer()->get('doctrine.orm.default_entity_manager');
+        $em->persist($job);
+        $em->flush($job);
+        $this->assertNotNull($job->getId());
+
+        $crawler = $client->request('GET', sprintf('/job/%d/edit', $job->getId()));
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertEquals(1, $crawler->selectButton('Delete')->count());
+        $this->assertEquals(1, $crawler->selectButton('Save')->count());
+
+        $form = $crawler->selectButton('job_form[save]')->form();
+        self::assertEquals('Hi all', $form->get('job_form[name]')->getValue());
+        self::assertEquals('@daily', $form->get('job_form[cronSchedule]')->getValue());
+        self::assertEquals('echo hi all', $form->get('job_form[command]')->getValue());
+
+        $form->get('job_form[command]')->setValue('');
+
+        $crawler = $client->submit($form);
+        self::assertTrue($client->getResponse()->isSuccessful());
+
+        $job2 = $em->find(Job::class, $job->getId());
+        $this->assertEquals($job->getCommand(), $job2->getCommand());
+
+        $form = $crawler->selectButton('job_form[save]')->form();
+        $form->get('job_form[command]')->setValue($job->getCommand());
+        $client->submit($form);
+        self::assertTrue($client->getResponse()->isRedirect('/'));
+
+        $crawler = $client->request('GET', sprintf('/job/%d/edit', $job->getId()));
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertEquals(1, $crawler->selectButton('Delete')->count());
+        $form = $crawler->selectButton('job_form[delete]')->form();
+        $client->submit($form, ['job_form[delete]' => 'Delete']);
+        self::assertTrue($client->getResponse()->isRedirect('/'));
+        $em->clear();
+        $job2 = $em->find(Job::class, $job->getId());
+        self::assertNull($job2);
+    }
+
+    /**
+     * @covers \CCronBundle\Controller\DefaultController::viewBuilds
+     */
+    public function testViewBuilds() {
+        /** @var Job $job */
+        /** @var JobRun[] $builds */
+        list($job, $job2, $builds) = $this->generateJobData(10);
+
+        $client = static::createClient();
+        $crawler = $client->request('GET', sprintf('/job/%d/builds', $job->getId()));
+        $this->assertTrue($client->getResponse()->isSuccessful());
+
+        $buildRow = $crawler->filter('[build-id=' . $builds[0]->getId() . ']');
+        self::assertEquals($builds[0]->getId(), $buildRow->filter('.build-id')->text());
+        self::assertEquals($builds[0]->getTime(), $this->stringToDate($buildRow->filter('.build-time')->text()));
+        self::assertEquals('1h1m5s', $buildRow->filter('.build-interval')->text());
+        self::assertEquals($builds[0]->getHost(), $buildRow->filter('.build-host')->text());
+    }
+
 }

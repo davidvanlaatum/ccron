@@ -38,8 +38,10 @@ class JobRunOutput {
 
     /**
      * @param string $output
+     * @return $this
      */
     public function setOutput($output) {
         $this->output = $output;
+        return $this;
     }
 }

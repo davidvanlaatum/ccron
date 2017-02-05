@@ -15,17 +15,6 @@ class JobRunOutputTest extends KernelTestCase {
     use UnitTestHelpers;
 
     public function testSettersAndGetters() {
-        $job = new Job();
-        $jobRun = new JobRun();
-        $job->setName('A Test Job');
-        $job->setCronSchedule('* * * * *');
-        $job->setCommand('echo hi');
-        $jobRun->setJob($job);
-        $jobRun->setTime(new \DateTime());
-        $jobRun->setHost('Host');
-        $jobRun->setRunTime(1);
-        $this->em->persist($job);
-        $this->em->persist($jobRun);
         $output = new JobRunOutput();
         $data = [
             'output' => 'ABC123'

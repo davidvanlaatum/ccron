@@ -4,7 +4,7 @@ namespace CCronBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CCronBundle\Repository\JobRunRepository")
  * @ORM\Table(name="runs")
  * @ORM\NamedQueries(value = {
  *     @ORM\NamedQuery(name="findForJob",query="SELECT j FROM __CLASS__ j WHERE j.job = :job"),
@@ -34,6 +34,7 @@ class JobRun {
 
     /**
      * @ORM\OneToOne(targetEntity="JobRunOutput", cascade={"persist","remove"}, fetch = "EXTRA_LAZY")
+     * @ORM\JoinColumn(nullable=false)
      */
     protected $output;
 
@@ -57,7 +58,7 @@ class JobRun {
     }
 
     /**
-     * @return mixed
+     * @return Job
      */
     public function getJob() {
         return $this->job;
