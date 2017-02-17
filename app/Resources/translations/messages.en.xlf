@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="25f7347236b51a5eae4ba01a7862cb55" resname="Schedule">
+        <source>Schedule</source>
+        <target>Schedule</target>
+      </trans-unit>
+      <trans-unit id="49ee3087348e8d44e1feda1917443987" resname="Name">
+        <source>Name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="ee97be03cb04119af45014d815621ce1" resname="Command">
+        <source>Command</source>
+        <target>Command</target>
+      </trans-unit>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354" resname="Save">
+        <source>Save</source>
+        <target>Save</target>
+      </trans-unit>
+      <trans-unit id="f2a6c498fb90ee345d997f888fce3b18" resname="Delete">
+        <source>Delete</source>
+        <target>Delete</target>
+      </trans-unit>
+      <trans-unit id="05a3a24340b7b9cc8d4e08f0ef4f4dd9" resname="Last Run">
+        <source>Last Run</source>
+        <target>Last Run</target>
+      </trans-unit>
+      <trans-unit id="9da1d7d297bfbe58a2b93cbdb9353017" resname="Next Run">
+        <source>Next Run</source>
+        <target>Next Run</target>
+      </trans-unit>
+      <trans-unit id="e0950ed8e1bbfb47494aabd4e0f031cc" resname="Run Time">
+        <source>Run Time</source>
+        <target>Run Time</target>
+      </trans-unit>
+      <trans-unit id="b17be3980329984800faadac35fbab7a" resname="No Jobs Found">
+        <source>No Jobs Found</source>
+        <target>No Jobs Found</target>
+      </trans-unit>
+      <trans-unit id="cf51066f49e517f274b8173cc265c60b" resname="Job">
+        <source>Job</source>
+        <target>Job</target>
+      </trans-unit>
+      <trans-unit id="c5301693c4e792bcd5a479ef38fb8f8d" resname="Run">
+        <source>Run</source>
+        <target>Run</target>
+      </trans-unit>
+      <trans-unit id="c2ca16d048ec66e04bca283eab048ec2" resname="Host">
+        <source>Host</source>
+        <target>Host</target>
+      </trans-unit>
+      <trans-unit id="a76d4ef5f3f6a672bbfab2865563e530" resname="Time">
+        <source>Time</source>
+        <target>Time</target>
+      </trans-unit>
+      <trans-unit id="136fe0fdf2ec6434fc6481b78c7b0b9e" resname="app.name">
+        <source>app.name</source>
+        <target>CCron</target>
+      </trans-unit>
+      <trans-unit id="b6ec480919ed837b758ae802bca3eb9f" resname="breadcrumbs.home">
+        <source>breadcrumbs.home</source>
+        <target>Home</target>
+      </trans-unit>
+      <trans-unit id="1e1df5a99da365b64900d0b34439a085" resname="breadcrumbs.job.add">
+        <source>breadcrumbs.job.add</source>
+        <target>Add Job</target>
+      </trans-unit>
+      <trans-unit id="360cd3af64af8e10c98cbb102e55c4ef" resname="cron.syntax">
+        <source>cron.syntax</source>
+        <target>Cron Syntax</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

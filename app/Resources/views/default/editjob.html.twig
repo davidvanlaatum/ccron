@@ -12,7 +12,7 @@
     {% if job is defined %}
         {{ parent() }}
     {% else %}
-        Add Job
+        {{ 'breadcrumbs.job.add'|trans }}
     {% endif %}
 {% endblock %}
 

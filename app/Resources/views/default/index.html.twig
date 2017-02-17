@@ -10,11 +10,11 @@
             <table class="table table-striped table-hover table-condensed jobs-table">
                 <thead>
                 <tr>
-                    <th class="col-sm-3">Name</th>
-                    <th class="col-sm-3">Schedule</th>
-                    <th class="col-sm-2">Last Run</th>
-                    <th class="col-sm-2">Next Run</th>
-                    <th class="col-sm-1">Run Time</th>
+                    <th class="col-sm-3">{{ 'Name' | trans }}</th>
+                    <th class="col-sm-3">{{ 'Schedule' | trans }}</th>
+                    <th class="col-sm-2">{{ 'Last Run' | trans }}</th>
+                    <th class="col-sm-2">{{ 'Next Run' | trans }}</th>
+                    <th class="col-sm-1">{{ 'Run Time' | trans }}</th>
                     <th class="col-sm-1"></th>
                 </tr>
                 </thead>
@@ -37,7 +37,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6">No Jobs Found</td>
+                        <td colspan="6">{{ 'No Jobs Found' | trans }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -52,16 +52,16 @@
             <table id="recentbuilds" class="table table-striped table-hover table-condensed recent-bulds-table">
                 <thead>
                 <tr>
-                    <th>Job</th>
-                    <th>Run</th>
-                    <th>Host</th>
-                    <th>Time</th>
-                    <th>Run Time</th>
+                    <th>{{ 'Job' | trans }}</th>
+                    <th>{{ 'Run' | trans }}</th>
+                    <th>{{ 'Host' | trans }}</th>
+                    <th>{{ 'Time' | trans }}</th>
+                    <th>{{ 'Run Time' | trans }}</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                {{ include("default/recentbuilds.html.twig", { 'builds': builds }) }}
+                {{ render(path('builds_recent')) }}
                 </tbody>
             </table>
         </div>
@@ -71,13 +71,7 @@
 {% block javascripts %}
     <script type="application/javascript">
         $(function () {
-            update();
+            updateRecentBuilds("{{ path('builds_recent') }}");
         });
-        function update() {
-            $.get("{{ path('recentbuilds') }}", function (data) {
-                $("#recentbuilds").find("tbody").html(data);
-                window.setTimeout(update, 10000);
-            });
-        }
     </script>
 {% endblock %}

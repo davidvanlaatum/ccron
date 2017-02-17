@@ -5,12 +5,16 @@ parameters:
 services:
   command.cron:
     class: CCronBundle\Command\CronCommand
+    lazy: true
     tags:
         - { name: console.command }
+    autowire: true
   command.master:
     class: CCronBundle\Command\MasterCommand
+    lazy: true
     tags:
         - { name: console.command }
+    autowire: true
   cronrunner:
     class: CCronBundle\Cron\Runner
     lazy: true
@@ -28,6 +32,8 @@ services:
     class: QXS\WorkerPool\WorkerPool
     lazy: true
     calls:
+      - [setChildProcessTitleFormat, ['%%basename%%: Worker %%i%% [%%state%%]']]
+      - [setParentProcessTitleFormat, ['%%basename%%: Cron Runner']]
       - [setWorkerPoolSize, ['%workers%']]
   worker:
     class: CCronBundle\Cron\Worker
@@ -115,3 +121,9 @@ services:
     lazy: true
     tags:
       - { name: form.type }
+  session.handler.pdo:
+    class:     Symfony\Bridge\Doctrine\HttpFoundation\DbalSessionHandler
+    public:    false
+    lazy: true
+    arguments:
+      - '@doctrine.dbal.default_connection'

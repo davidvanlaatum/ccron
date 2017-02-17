@@ -9,10 +9,12 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\CCronBundle\ContainerAwareTestCase;
 use Tests\CCronBundle\DBAwareTestTrait;
+use Tests\CCronBundle\WebTestTrait;
 
 class DefaultControllerTest extends WebTestCase {
     use ContainerAwareTestCase;
     use DBAwareTestTrait;
+    use WebTestTrait;
 
     /**
      * @covers \CCronBundle\Controller\DefaultController::indexAction
@@ -20,9 +22,11 @@ class DefaultControllerTest extends WebTestCase {
     public function testIndex() {
         $client = static::createClient();
         list($job1, $job2, $builds) = $this->generateJobData();
-        $crawler = $client->request('GET', '/');
+        $this->logIn($client);
+        $crawler = $client->request('GET', self::router()->generate('homepage'));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $jobInfo = $crawler->filter('[job-id=' . $job1->getID() . ']');
+        $this->assertGreaterThan(0, $jobInfo->count());
         $this->assertEquals($job1->getName(), trim($jobInfo->filter(".job-name")->text()));
         $this->assertEquals($job1->getCronSchedule(), trim($jobInfo->filter(".job-schedule")->text()));
         $this->assertEquals($job1->getLastRun(), $this->stringToDate($jobInfo->filter(".job-last-run")->text()));
@@ -30,6 +34,7 @@ class DefaultControllerTest extends WebTestCase {
         $this->assertEquals('1h1m5s', trim($jobInfo->filter(".job-last-run-interval")->text()));
 
         $jobInfo = $crawler->filter('[job-id=' . $job2->getID() . ']');
+        $this->assertGreaterThan(0, $jobInfo->count());
         $this->assertEquals($job2->getName(), trim($jobInfo->filter(".job-name")->text()));
         $this->assertEquals($job2->getCronSchedule(), trim($jobInfo->filter(".job-schedule")->text()));
         $this->assertEquals($job2->getLastRun(), $this->stringToDate($jobInfo->filter(".job-last-run")->text()));
@@ -99,18 +104,19 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::recentBuilds
+     * @covers \CCronBundle\Controller\DefaultController::recentBuildsAction
      */
     public function testRecentBuilds() {
         $client = static::createClient();
         list($job1, $job2, $builds) = $this->generateJobData();
-        $crawler = $client->request('GET', '/recentbuilds');
+        $this->logIn($client);
+        $crawler = $client->request('GET', self::router()->generate('builds_recent'));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertRecentBuilds($builds, $crawler);
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::viewConsole
+     * @covers \CCronBundle\Controller\DefaultController::viewConsoleAction()
      */
     public function testConsole() {
         $client = static::createClient();
@@ -120,7 +126,8 @@ class DefaultControllerTest extends WebTestCase {
          * @var Job $job2
          */
         list($job1, $job2, $builds) = $this->generateJobData();
-        $crawler = $client->request('GET', sprintf('/job/%d/console/%s', $job1->getId(), $builds[0]->getId()));
+        $this->logIn($client);
+        $crawler = $client->request('GET', self::router()->generate('viewconsole', ['job' => $job1->getId(), 'id' => $builds[0]->getId()]));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertTrue($client->getResponse()->isCacheable(), 'Response is not cacheable');
         $this->assertEquals('Hi all', $client->getResponse()->getContent());
@@ -134,11 +141,12 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::addJob
+     * @covers \CCronBundle\Controller\DefaultController::addJobAction()
      */
     public function testAddJob() {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/job/add');
+        $this->logIn($client);
+        $crawler = $client->request('GET', self::router()->generate('addjob'));
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertEquals(0, $crawler->selectButton('Delete')->count());
         $form = $crawler->selectButton('job_form[save]')->form([
@@ -159,10 +167,11 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::editJob
+     * @covers \CCronBundle\Controller\DefaultController::editJobAction()
      */
     public function testEditJob() {
         $client = static::createClient();
+        $this->logIn($client);
         $job = new Job();
         $job->setName('Hi all');
         $job->setCronSchedule('@daily');
@@ -172,7 +181,7 @@ class DefaultControllerTest extends WebTestCase {
         $em->flush($job);
         $this->assertNotNull($job->getId());
 
-        $crawler = $client->request('GET', sprintf('/job/%d/edit', $job->getId()));
+        $crawler = $client->request('GET', self::router()->generate('editjob', ['id' => $job->getId()]));
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertEquals(1, $crawler->selectButton('Delete')->count());
         $this->assertEquals(1, $crawler->selectButton('Save')->count());
@@ -207,7 +216,7 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::viewBuilds
+     * @covers \CCronBundle\Controller\DefaultController::viewBuildsAction()
      */
     public function testViewBuilds() {
         /** @var Job $job */
@@ -215,7 +224,8 @@ class DefaultControllerTest extends WebTestCase {
         list($job, $job2, $builds) = $this->generateJobData(10);
 
         $client = static::createClient();
-        $crawler = $client->request('GET', sprintf('/job/%d/builds', $job->getId()));
+        $this->logIn($client);
+        $crawler = $client->request('GET', self::router()->generate('viewbuilds', ['id' => $job->getId()]));
         $this->assertTrue($client->getResponse()->isSuccessful());
 
         $buildRow = $crawler->filter('[build-id=' . $builds[0]->getId() . ']');

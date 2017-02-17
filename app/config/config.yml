@@ -10,7 +10,7 @@ parameters:
 
 framework:
     #esi:             ~
-    #translator:      { fallbacks: ["%locale%"] }
+    translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -25,9 +25,7 @@ framework:
     trusted_hosts:   ~
     trusted_proxies: ~
     session:
-        # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-        handler_id:  session.handler.native_file
-        save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
+        handler_id: session.handler.pdo
     fragments:       ~
     http_method_override: true
     assets: ~
@@ -72,6 +70,7 @@ swiftmailer:
     host:      "%mailer_host%"
     username:  "%mailer_user%"
     password:  "%mailer_password%"
+    sender_address: "%mailer_from%"
     spool:     { type: memory }
 
 old_sound_rabbit_mq:
@@ -103,14 +102,6 @@ old_sound_rabbit_mq:
       exchange_options: {name: 'cron', type: direct}
       queue_options:    {name: 'cron'}
   consumers:
-#    cron:
-#      connection:       default
-#      exchange_options: {name: 'cron', type: direct}
-#      queue_options:    {name: 'cron'}
-#      callback:         cronrunner
-#      idle_timeout:     10
-#      idle_timeout_exit_code: 0
-#      qos_options:      {prefetch_size: 0, prefetch_count: '%workers%', global: false}
     events:
       connection:       default
       exchange_options: {name: 'events', type: topic}
@@ -147,3 +138,15 @@ old_sound_rabbit_mq:
       queue_options:    {name: 'master.rpc'}
       qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
       callback:         rpc_server
+fos_user:
+  db_driver: orm
+  firewall_name: main
+  user_class: CCronBundle\Entity\User
+  from_email:
+    address: "%mailer_from%"
+    sender_name: "%mailer_from_name%"
+assetic:
+    debug:          '%kernel.debug%'
+    use_controller: '%kernel.debug%'
+    filters:
+        cssrewrite: ~

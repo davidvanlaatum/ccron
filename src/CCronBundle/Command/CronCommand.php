@@ -2,27 +2,32 @@
 
 namespace CCronBundle\Command;
 
+use CCronBundle\Cron\HostnameDeterminer;
 use CCronBundle\Cron\Runner;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CronCommand extends ContainerAwareCommand {
+class CronCommand extends DaemonCommand {
+    /** @var Runner */
+    protected $runner;
 
+    public function __construct(HostnameDeterminer $hostnameDeterminer, Runner $runner) {
+        parent::__construct($hostnameDeterminer);
+        $this->runner = $runner;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected function configure() {
+        parent::configure();
         $this->setName("cron");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output) {
-        /** @var Runner $runner */
-        $runner = null;
-        while ($runner == null) {
-            try {
-                $runner = $this->getContainer()->get("cronrunner");
-            } catch (\ErrorException $e) {
-                sleep(2);
-            }
-        }
-        $runner->run();
+        $this->runner->run();
     }
 }

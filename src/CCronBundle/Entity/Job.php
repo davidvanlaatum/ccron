@@ -4,6 +4,7 @@ namespace CCronBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use CCronBundle\Validator\Constraints as Constraints;
 
 /**
  * @ORM\Entity
@@ -31,7 +32,7 @@ class Job {
 
     /**
      * @ORM\Column(type="string", length=100)
-     * @\CCronBundle\Validator\Constraints\Cron
+     * @Constraints\Cron
      */
     protected $cronSchedule;
 

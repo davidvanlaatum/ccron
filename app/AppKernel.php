@@ -6,6 +6,8 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 class AppKernel extends Kernel {
     public function registerBundles() {
         $bundles = [
+            new FOS\UserBundle\FOSUserBundle(),
+            new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
@@ -31,10 +33,6 @@ class AppKernel extends Kernel {
         return "CCron";
     }
 
-    public function getRootDir() {
-        return __DIR__;
-    }
-
     public function getCacheDir() {
         return dirname(__DIR__) . '/var/cache/' . $this->getEnvironment();
     }
@@ -45,5 +43,9 @@ class AppKernel extends Kernel {
 
     public function registerContainerConfiguration(LoaderInterface $loader) {
         $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
+    }
+
+    public function getRootDir() {
+        return __DIR__;
     }
 }

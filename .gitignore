@@ -32,3 +32,9 @@ web/assets/vendor
 .idea/dbnavigator.xml
 *.iws
 .idea_modules/
+puppet/environments/common
+.vagrant
+.idea/composerJson.xml
+.idea/vagrant.xml
+web/css
+web/js

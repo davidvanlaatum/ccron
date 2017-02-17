@@ -1,29 +1,48 @@
 <?php
 namespace CCronBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use CCronBundle\Cron\FailoverTracker;
+use CCronBundle\Cron\HostnameDeterminer;
+use CCronBundle\Cron\Master;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MasterCommand extends ContainerAwareCommand {
+class MasterCommand extends DaemonCommand {
 
+    /** @var FailoverTracker */
+    protected $failoverTracker;
+    /** @var Master */
+    protected $master;
+
+    /**
+     * MasterCommand constructor.
+     * @param FailoverTracker $failoverTracker
+     * @param Master $master
+     * @param HostnameDeterminer $hostnameDeterminer
+     */
+    public function __construct(FailoverTracker $failoverTracker, Master $master, HostnameDeterminer $hostnameDeterminer) {
+        parent::__construct($hostnameDeterminer);
+        $this->failoverTracker = $failoverTracker;
+        $this->master = $master;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     protected function configure() {
+        parent::configure();
         $this->setName("master");
-        $this->addOption("name", null, InputOption::VALUE_REQUIRED, "Hostname");
         $this->addOption("master", null, null, "Force boot as master (for development)");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $name = $input->getOption("name");
-        if ($name) {
-            $this->getContainer()->get("hostname_determiner")->set($name);
-        }
-        $failoverTracker = $this->getContainer()->get("failover_tracker");
         if ($input->getOption("master")) {
-            $failoverTracker->setMaster();
+            $this->failoverTracker->setMaster();
         }
-        $master = $this->getContainer()->get("master");
-        $master->run();
+        $this->master->run();
     }
 }
