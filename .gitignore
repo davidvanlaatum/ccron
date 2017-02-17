@@ -30,6 +30,8 @@ web/assets/vendor
 .idea/sonarIssues.xml
 .idea/atlassian-ide-plugin.xml
 .idea/dbnavigator.xml
+.idea/php.xml
+.idea/remote-mappings.xml
 *.iws
 .idea_modules/
 puppet/environments/common
@@ -38,3 +40,4 @@ puppet/environments/common
 .idea/vagrant.xml
 web/css
 web/js
+cachegrind.*
