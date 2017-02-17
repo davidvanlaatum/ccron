@@ -66,6 +66,7 @@ mysql::db {
     grant    => ['ALL'];
 }
 
+Yumrepo['remi'] ->
 class {
   'rabbitmq':
     admin_enable      => true,
@@ -98,13 +99,19 @@ rabbitmq_user_permissions { 'admin@/':
 
 include composer
 
+package {
+  'httpd':
+    ensure => present,
+    notify => Service['httpd'];
+}
+  ->
 file {
   '/etc/httpd/conf.d/welcome.conf':
     ensure => absent,
     notify => Service['httpd'];
   '/etc/httpd/conf.d/root.conf':
-    content => 'DocumentRoot /var/www/html/web
-  <Directory "/var/www/html/web">
+    content => 'DocumentRoot /var/www/ccron/web
+  <Directory "/var/www/ccron/web">
     AllowOverride All
     # Allow open access:
     Require all granted
@@ -113,16 +120,11 @@ file {
     notify  => Service['httpd'];
 }
 
-package {
-  'httpd':
-    ensure => present,
-    notify => Service['httpd'];
-}
-
 service {
   'httpd':
-    ensure => running,
-    enable => true;
+    ensure  => running,
+    require => Package['httpd'],
+    enable  => true;
   ['firewalld', 'iptables']:
     ensure => stopped,
     enable => false;

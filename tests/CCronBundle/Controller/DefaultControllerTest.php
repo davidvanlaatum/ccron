@@ -26,19 +26,11 @@ class DefaultControllerTest extends WebTestCase {
         $crawler = $client->request('GET', self::router()->generate('homepage'));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $jobInfo = $crawler->filter('[job-id=' . $job1->getID() . ']');
-        $this->assertGreaterThan(0, $jobInfo->count());
-        $this->assertEquals($job1->getName(), trim($jobInfo->filter(".job-name")->text()));
-        $this->assertEquals($job1->getCronSchedule(), trim($jobInfo->filter(".job-schedule")->text()));
-        $this->assertEquals($job1->getLastRun(), $this->stringToDate($jobInfo->filter(".job-last-run")->text()));
-        $this->assertEquals($job1->getNextRun(), $this->stringToDate($jobInfo->filter(".job-next-run")->text()));
+        $this->checkJob($jobInfo, $job1);
         $this->assertEquals('1h1m5s', trim($jobInfo->filter(".job-last-run-interval")->text()));
 
         $jobInfo = $crawler->filter('[job-id=' . $job2->getID() . ']');
-        $this->assertGreaterThan(0, $jobInfo->count());
-        $this->assertEquals($job2->getName(), trim($jobInfo->filter(".job-name")->text()));
-        $this->assertEquals($job2->getCronSchedule(), trim($jobInfo->filter(".job-schedule")->text()));
-        $this->assertEquals($job2->getLastRun(), $this->stringToDate($jobInfo->filter(".job-last-run")->text()));
-        $this->assertEquals($job2->getNextRun(), $this->stringToDate($jobInfo->filter(".job-next-run")->text()));
+        $this->checkJob($jobInfo, $job2);
         $this->assertEquals('', trim($jobInfo->filter(".job-last-run-interval")->text()));
         $this->assertRecentBuilds($builds, $crawler);
     }
@@ -82,6 +74,14 @@ class DefaultControllerTest extends WebTestCase {
         return [$job1, $job2, $builds];
     }
 
+    protected function checkJob(Crawler $jobInfo, Job $job) {
+        $this->assertGreaterThan(0, $jobInfo->count());
+        $this->assertEquals($job->getName(), trim($jobInfo->filter(".job-name")->text()));
+        $this->assertEquals($job->getCronSchedule(), trim($jobInfo->filter(".job-schedule")->text()));
+        $this->assertEquals($job->getLastRun(), $this->stringToDate($jobInfo->filter(".job-last-run")->text()));
+        $this->assertEquals($job->getNextRun(), $this->stringToDate($jobInfo->filter(".job-next-run")->text()));
+    }
+
     public function stringToDate($string) {
         if (trim($string) == false) {
             return null;
@@ -116,7 +116,7 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::viewConsoleAction()
+     * @covers \CCronBundle\Controller\BuildController::viewConsoleAction()
      */
     public function testConsole() {
         $client = static::createClient();
@@ -141,7 +141,7 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::addJobAction()
+     * @covers \CCronBundle\Controller\JobController::addJobAction()
      */
     public function testAddJob() {
         $client = static::createClient();
@@ -167,7 +167,7 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::editJobAction()
+     * @covers \CCronBundle\Controller\JobController::editJobAction()
      */
     public function testEditJob() {
         $client = static::createClient();
@@ -216,7 +216,7 @@ class DefaultControllerTest extends WebTestCase {
     }
 
     /**
-     * @covers \CCronBundle\Controller\DefaultController::viewBuildsAction()
+     * @covers \CCronBundle\Controller\BuildController::viewBuildsAction()
      */
     public function testViewBuilds() {
         /** @var Job $job */
