@@ -10,34 +10,14 @@
   <component name="PhpInterpretersPhpInfoCache">
     <phpInfoCache>
       <interpreter name="Remote PHP">
-        <phpinfo binary_type="PHP" php_cgi="/usr/bin/php-cgi" php_cli="/usr/bin/php" path_separator=":" remote_host="10.0.2.2 53249 22" version="5.6.30">
-          <additional_php_ini>/etc/php.d/10-opcache.ini, /etc/php.d/15-xdebug.ini, /etc/php.d/20-bcmath.ini, /etc/php.d/20-bz2.ini, /etc/php.d/20-calendar.ini, /etc/php.d/20-ctype.ini, /etc/php.d/20-curl.ini, /etc/php.d/20-dom.ini, /etc/php.d/20-exif.ini, /etc/php.d/20-fileinfo.ini, /etc/php.d/20-ftp.ini, /etc/php.d/20-gettext.ini, /etc/php.d/20-iconv.ini, /etc/php.d/20-mbstring.ini, /etc/php.d/20-mysqlnd.ini, /etc/php.d/20-pdo.ini, /etc/php.d/20-phar.ini, /etc/php.d/20-posix.ini, /etc/php.d/20-shmop.ini, /etc/php.d/20-simplexml.ini, /etc/php.d/20-sockets.ini, /etc/php.d/20-sqlite3.ini, /etc/php.d/20-sysvmsg.ini, /etc/php.d/20-sysvsem.ini, /etc/php.d/20-sysvshm.ini, /etc/php.d/20-tokenizer.ini, /etc/php.d/20-xml.ini, /etc/php.d/20-xmlwriter.ini, /etc/php.d/20-xsl.ini, /etc/php.d/30-mysql.ini, /etc/php.d/30-mysqli.ini, /etc/php.d/30-pdo_mysql.ini, /etc/php.d/30-pdo_sqlite.ini, /etc/php.d/30-wddx.ini, /etc/php.d/30-xmlreader.ini, /etc/php.d/40-apcu.ini, /etc/php.d/40-json.ini, /etc/php.d/40-xcache.ini, /etc/php.d/40-zip.ini</additional_php_ini>
+        <phpinfo binary_type="PHP" php_cgi="/usr/bin/php-cgi" php_cli="/usr/bin/php" path_separator=":" remote_host="192.168.131.1 52007 22" version="5.6.30">
+          <additional_php_ini>/etc/php.d/10-opcache.ini, /etc/php.d/15-xdebug.ini, /etc/php.d/20-bcmath.ini, /etc/php.d/20-bz2.ini, /etc/php.d/20-calendar.ini, /etc/php.d/20-ctype.ini, /etc/php.d/20-curl.ini, /etc/php.d/20-dom.ini, /etc/php.d/20-exif.ini, /etc/php.d/20-fileinfo.ini, /etc/php.d/20-ftp.ini, /etc/php.d/20-gettext.ini, /etc/php.d/20-iconv.ini, /etc/php.d/20-mbstring.ini, /etc/php.d/20-mysqlnd.ini, /etc/php.d/20-pdo.ini, /etc/php.d/20-phar.ini, /etc/php.d/20-posix.ini, /etc/php.d/20-shmop.ini, /etc/php.d/20-simplexml.ini, /etc/php.d/20-sockets.ini, /etc/php.d/20-sqlite3.ini, /etc/php.d/20-sysvmsg.ini, /etc/php.d/20-sysvsem.ini, /etc/php.d/20-sysvshm.ini, /etc/php.d/20-tokenizer.ini, /etc/php.d/20-xml.ini, /etc/php.d/20-xmlwriter.ini, /etc/php.d/20-xsl.ini, /etc/php.d/30-mysql.ini, /etc/php.d/30-mysqli.ini, /etc/php.d/30-pdo_mysql.ini, /etc/php.d/30-pdo_sqlite.ini, /etc/php.d/30-wddx.ini, /etc/php.d/30-xmlreader.ini, /etc/php.d/40-json.ini, /etc/php.d/40-zip.ini</additional_php_ini>
           <configuration_file>/etc/php.ini</configuration_file>
           <configuration_options>
             <configuration_option name="SMTP" value="localhost" />
             <configuration_option name="allow_url_fopen" value="1" />
             <configuration_option name="allow_url_include" value="0" />
             <configuration_option name="always_populate_raw_post_data" value="0" />
-            <configuration_option name="apc.coredump_unmap" value="0" />
-            <configuration_option name="apc.enable_cli" value="0" />
-            <configuration_option name="apc.enabled" value="1" />
-            <configuration_option name="apc.entries_hint" value="4096" />
-            <configuration_option name="apc.gc_ttl" value="3600" />
-            <configuration_option name="apc.mmap_file_mask" value="/tmp/apc.XXXXXX" />
-            <configuration_option name="apc.preload_path" value="" />
-            <configuration_option name="apc.rfc1867" value="0" />
-            <configuration_option name="apc.rfc1867_freq" value="0" />
-            <configuration_option name="apc.rfc1867_name" value="APC_UPLOAD_PROGRESS" />
-            <configuration_option name="apc.rfc1867_prefix" value="upload_" />
-            <configuration_option name="apc.rfc1867_ttl" value="3600" />
-            <configuration_option name="apc.serializer" value="php" />
-            <configuration_option name="apc.shm_segments" value="1" />
-            <configuration_option name="apc.shm_size" value="32M" />
-            <configuration_option name="apc.slam_defense" value="1" />
-            <configuration_option name="apc.smart" value="0" />
-            <configuration_option name="apc.ttl" value="0" />
-            <configuration_option name="apc.use_request_time" value="1" />
-            <configuration_option name="apc.writable" value="/tmp" />
             <configuration_option name="arg_separator.input" value="&amp;" />
             <configuration_option name="arg_separator.output" value="&amp;" />
             <configuration_option name="asp_tags" value="0" />
@@ -256,35 +236,6 @@
             <configuration_option name="user_ini.cache_ttl" value="300" />
             <configuration_option name="user_ini.filename" value=".user.ini" />
             <configuration_option name="variables_order" value="EGPCS" />
-            <configuration_option name="xcache.admin.enable_auth" value="1" />
-            <configuration_option name="xcache.allocator" value="bestfit" />
-            <configuration_option name="xcache.cacher" value="" />
-            <configuration_option name="xcache.coredump_directory" value="" />
-            <configuration_option name="xcache.count" value="1" />
-            <configuration_option name="xcache.coveragedump_directory" value="" />
-            <configuration_option name="xcache.coverager" value="" />
-            <configuration_option name="xcache.coverager_autostart" value="1" />
-            <configuration_option name="xcache.disable_on_crash" value="" />
-            <configuration_option name="xcache.experimental" value="" />
-            <configuration_option name="xcache.gc_interval" value="0" />
-            <configuration_option name="xcache.mmap_path" value="/dev/zero" />
-            <configuration_option name="xcache.optimizer" value="" />
-            <configuration_option name="xcache.readonly_protection" value="" />
-            <configuration_option name="xcache.shm_scheme" value="mmap" />
-            <configuration_option name="xcache.size" value="60M" />
-            <configuration_option name="xcache.slots" value="8K" />
-            <configuration_option name="xcache.stat" value="1" />
-            <configuration_option name="xcache.test" value="0" />
-            <configuration_option name="xcache.ttl" value="0" />
-            <configuration_option name="xcache.var_allocator" value="bestfit" />
-            <configuration_option name="xcache.var_count" value="1" />
-            <configuration_option name="xcache.var_gc_interval" value="300" />
-            <configuration_option name="xcache.var_maxttl" value="0" />
-            <configuration_option name="xcache.var_namespace" value="" />
-            <configuration_option name="xcache.var_namespace_mode" value="0" />
-            <configuration_option name="xcache.var_size" value="4M" />
-            <configuration_option name="xcache.var_slots" value="8K" />
-            <configuration_option name="xcache.var_ttl" value="0" />
             <configuration_option name="xdebug.auto_trace" value="0" />
             <configuration_option name="xdebug.cli_color" value="0" />
             <configuration_option name="xdebug.collect_assignments" value="0" />
@@ -368,13 +319,7 @@
             <extension name="Reflection" />
             <extension name="SPL" />
             <extension name="SimpleXML" />
-            <extension name="XCache" />
-            <extension name="XCache Cacher" />
-            <extension name="XCache Coverager" />
-            <extension name="XCache Optimizer" />
             <extension name="Zend OPcache" />
-            <extension name="apc" />
-            <extension name="apcu" />
             <extension name="bcmath" />
             <extension name="bz2" />
             <extension name="calendar" />
@@ -429,7 +374,7 @@
   <component name="PhpUnit">
     <phpunit_settings>
       <PhpUnitSettings load_method="CUSTOM_LOADER" configuration_file_path="$PROJECT_DIR$/phpunit.xml.dist" custom_loader_path="$PROJECT_DIR$/vendor/autoload.php" phpunit_phar_path="" use_configuration_file="true" />
-      <phpunit_by_interpreter interpreter_id="ba0f3a47-1b97-4f22-afa6-da35417f7a70" load_method="CUSTOM_LOADER" configuration_file_path="/var/www/html/phpunit.xml.dist" custom_loader_path="/var/www/html/vendor/autoload.php" phpunit_phar_path="" use_configuration_file="true" />
+      <phpunit_by_interpreter interpreter_id="ba0f3a47-1b97-4f22-afa6-da35417f7a70" load_method="CUSTOM_LOADER" configuration_file_path="/var/www/ccron/phpunit.xml.dist" custom_loader_path="/var/www/ccron/vendor/autoload.php" phpunit_phar_path="" use_configuration_file="true" />
     </phpunit_settings>
   </component>
 </project>
