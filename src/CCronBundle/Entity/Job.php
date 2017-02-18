@@ -49,8 +49,8 @@ class Job {
     protected $lastRun;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @var int
+     * @ORM\Column(type="float", nullable=true)
+     * @var float
      */
     protected $lastRunTime;
 
@@ -143,14 +143,14 @@ class Job {
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getLastRunTime() {
         return $this->lastRunTime;
     }
 
     /**
-     * @param int $lastRunTime
+     * @param float $lastRunTime
      */
     public function setLastRunTime($lastRunTime) {
         $this->lastRunTime = $lastRunTime;
@@ -167,7 +167,7 @@ class Job {
                 $t1 = new \DateTime();
             }
             $t2 = clone $t1;
-            $t2->add(new \DateInterval('PT' . $this->lastRunTime . 'S'));
+            $t2->add(new \DateInterval('PT' . round($this->lastRunTime, 0) . 'S'));
             return $t1->diff($t2);
         }
         return null;

@@ -17,6 +17,8 @@ install:
 script:
   - vendor/bin/phpunit
   - vendor/bin/phpcpd --fuzzy src/ tests/
+  - bin/console translation:update --output-format=xlf en --force
+  - git diff --exit-code
 
 services:
   - mysql

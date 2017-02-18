@@ -46,8 +46,7 @@ services:
   job_tracker:
     class: CCronBundle\Cron\JobTracker
     lazy: true
-    calls:
-      - [setContainer, ['@service_container']]
+    autowire: true
   master:
     class: CCronBundle\Cron\Master
     lazy: true
@@ -127,3 +126,9 @@ services:
     lazy: true
     arguments:
       - '@doctrine.dbal.default_connection'
+  app.twig.runtime.formatter:
+        class: CCronBundle\Twig\RuntimeFormatter
+        public: false
+        autowire: true
+        tags:
+            - { name: twig.extension }

@@ -44,7 +44,6 @@ class Command extends AbstractJob {
     public function fillInLog(JobRun $log) {
         $output = new JobRunOutput();
         $output->setOutput($this->output);
-        $log->setRunTime(1);
         $log->setOutput($output);
     }
 }

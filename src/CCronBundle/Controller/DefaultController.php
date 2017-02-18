@@ -38,8 +38,8 @@ class DefaultController extends Controller {
         $builds = $em->getRepository(JobRun::class)->getRecent();
         $date = null;
         foreach ($builds as $build) {
-            if ($date < $build->getTime()) {
-                $date = $build->getTime();
+            if ($date < $this->getAdjustedDate($build->getTime(), $build->getRunTime())) {
+                $date = $this->getAdjustedDate($build->getTime(), $build->getRunTime());
             }
         }
         $response = new Response();
@@ -55,5 +55,14 @@ class DefaultController extends Controller {
             ], $response);
         }
         return $response;
+    }
+
+    protected function getAdjustedDate(\DateTime $dateTime, $adjust) {
+        if ($adjust !== null) {
+            $dateTime = clone $dateTime;
+            return $dateTime->modify("+" . round($adjust) . "seconds");
+        } else {
+            return $dateTime;
+        }
     }
 }

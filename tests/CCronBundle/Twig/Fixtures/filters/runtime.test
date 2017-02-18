@@ -1,0 +1,27 @@
+--TEST--
+"runtime" filter
+--TEMPLATE--
+{{ data1|runtime }}
+{{ null|runtime(date1) }}
+{{ null|runtime }}
+{{ data2|runtime }}
+{{ data3|runtime }}
+{{ data4|runtime }}
+{{ data5|runtime }}
+--DATA--
+return array(
+'data1' => 1.2,
+'date1' => new \DateTime('@1'),
+'data2' => -1,
+'data3' => 3601,
+'data4' => 0,
+'data5' => 86400.5,
+)
+--EXPECT--
+1s200ms
+&gt;1s
+
+-1
+1h1s
+0
+1d500ms

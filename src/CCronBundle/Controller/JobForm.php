@@ -10,9 +10,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 class JobForm extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder->add('name', TextType::class)
-            ->add('cronSchedule', CronType::class, ['label' => 'Schedule'])
+            ->add('cronSchedule', CronType::class, ['label' => 'job.schedule.title'])
             ->add('command', TextType::class)
-            ->add('save', SubmitType::class, array('label' => 'Save'))
-            ->add('delete', SubmitType::class, array('label' => 'Delete'));
+            ->add('save', SubmitType::class, array('label' => 'job.save'))
+            ->add('delete', SubmitType::class, array('label' => 'job.delete'));
     }
 }

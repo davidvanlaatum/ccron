@@ -34,13 +34,13 @@ class JobRun {
 
     /**
      * @ORM\OneToOne(targetEntity="JobRunOutput", cascade={"persist","remove"}, fetch = "EXTRA_LAZY")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     protected $output;
 
     /**
-     * @ORM\Column(type="integer")
-     * @var int
+     * @ORM\Column(type="float",nullable=true)
+     * @var float
      */
     protected $runTime;
 
@@ -100,14 +100,14 @@ class JobRun {
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getRunTime() {
         return $this->runTime;
     }
 
     /**
-     * @param int $runTime
+     * @param float $runTime
      */
     public function setRunTime($runTime) {
         $this->runTime = $runTime;
@@ -121,7 +121,7 @@ class JobRun {
                 $t1 = new \DateTime();
             }
             $t2 = clone $t1;
-            $t2->add(new \DateInterval('PT' . $this->runTime . 'S'));
+            $t2->add(new \DateInterval('PT' . round($this->runTime, 0) . 'S'));
             return $t1->diff($t2);
         }
         return null;
